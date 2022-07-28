@@ -1,0 +1,13 @@
+name = "quench"
+uuid = "0898ab3f-ab2c-495f-bd4a-4b233d6ca523"
+authors = ["ThesisSlayers <72562021+ThesisSlayers@users.noreply.github.com>"]
+version = "0.1.0"
+
+[deps]
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+HCubature = "19dc6840-f33b-545b-b366-655c7e3ffd49"
+IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+QuantumInformation = "3c0b384b-479c-5684-b2ef-9d7a46dd931e"
+SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"

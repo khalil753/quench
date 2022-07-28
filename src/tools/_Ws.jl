@@ -35,14 +35,7 @@ function _W_flat_spacetime(X::Vec{T}, X′::Vec{T})::C where T<:Fl
   -1/(4*π^2*((Δt - im*ε)^2 - sum(Δx.^2)))
 end
 
-function time_order(F::Function)
-  time_ordered_F(X::Vec{T}, X′::Vec{T}) = X[1] > X′[1] ? F(X,X′) : F(X′,X) 
-  return time_ordered_F
-end
-
-_Ws = Dict("quench" => _W_quench,
-           "flat"   => _W_flat_spacetime)
-_Ds = map_dict(time_order, _Ws)
+_D(X::Vec{<:Fl}, X′::Vec{<:Fl})::C = if (X[1] > X′[1]) _W(X,X′) else _W(X′,X) end
 
 struct CorrFuncWithTrajectories <: Function
   _G::Function
