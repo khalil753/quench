@@ -19,7 +19,9 @@ function get_ls(Ws, λ, Ω, χ)
        "AB" =>        get_l(Ws["AB"], λ, Ω, χ))
 end
 
-function create_distributions(_Ws, _Ds, wightman_funct_name, χ0A, χ0B, b, dist_ε, numeric_derivative_ε)
+function create_distributions(_Ws, _Ds, wightman_funct_name,
+                              χ0A, χ0B, b, 
+                              dist_ε, numeric_derivative_ε)
   _W, _D = _Ws[wightman_funct_name], _Ds[wightman_funct_name]
   Ws = Dict()
   Ws["AB"] = DistributionWithTrajectories(_W, χ0A, χ0B, b)
@@ -32,10 +34,12 @@ function create_distributions(_Ws, _Ds, wightman_funct_name, χ0A, χ0B, b, dist
   return  Wττ′s,  Dττ′
 end
 
-function create_coutour(X, X′, dist, deform_func, ε_contour)
-  function z(τ, τ′)
-    if abs(dist(X(τ), X′(τ′))) > ε_deformation 
-      return τ
+function deform_trajectories(X::QuenchTrajectory, X′::QuenchTrajectory, deform_func::Function, ε_contour::Float64)
+  function Z(τ, τ′)
+    Δη, Δy = X(τ) - X′(τ′)
+    if abs(Δη - Δy) < ε_deformation 
+      iΔτ = deform_func(τ, τ′)
+      return τ 
     else
       iΔτ = im*ε_deformation*deform_func(τ, τ′)/ε_deformation
       return τ + iΔτ

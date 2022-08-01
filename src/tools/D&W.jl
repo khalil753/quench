@@ -13,13 +13,13 @@ function W₀(z, z′, ε)
   - 1/(4π)*(log(cosh((z + z′)/2)) + log(sinh(z - z′ - iε)/2)) # + log(sinh(abs(z - z′ - iε)/2)))
 end
 
-function _W_quench(X::Vec{C}, X′::Vec{C}, ε)
-  iε = im*ε
+function _W_quench(X::Vec{C}, X′::Vec{C}, ε::Fl)
   if is_after_quench(X) && is_after_quench(X′) 
     (η,y), (η′,y′) = X, X′
     return W₀(η - y, η′ - y′, ε) + W₀(η + y, η′ + y′, ε)
   elseif is_before_quench(X) && is_before_quench(X′)
     Δt, Δx = X - X′ 
+    iε = im*ε
     return -1/4π*(log(abs((Δt-iε)^2 - Δx^2))) - im/8*(sign(Δt+Δx) + sign(Δt-Δx))
   else 
     # return 0
@@ -27,7 +27,7 @@ function _W_quench(X::Vec{C}, X′::Vec{C}, ε)
   end
 end
 
-function _W_flat_spacetime(X::Vec{T}, X′::Vec{T}, ε::T)::C where T<:Fl
+function _W_flat_spacetime(X::Vec{C}, X′::Vec{C}, ε::C)
   iε = im*ε
   Δt, Δx = X[1] - X′[1], X[2:end] - X′[2:end]
   -1/(4*π^2*((Δt - iε)^2 - sum(Δx.^2)))
@@ -45,15 +45,22 @@ _Ws = Dict("quench" => _W_quench,
 _Ds = map_dict(time_order_dist, _Ws)
 
 struct DistributionWithTrajectories <: Function
-  distrib_func::Function
+  _G::Function
   X ::AbstractTrajectory
   X′::AbstractTrajectory 
+  ε ::Float64
+  Δf::Function
 end
-function DistributionWithTrajectories(distrib_func::Function, χ0::Fl, χ0′::Fl, b::Fl) 
+function DistributionWithTrajectories(_G::Function, χ0::Fl, χ0′::Fl, b::Fl, ε ::Float64, Δf::Function) 
   """ Initialization for quench trajectories"""
-  DistributionWithTrajectories(distrib_func, QuenchTrajectory(χ0,b), QuenchTrajectory(χ0′,b))
+  DistributionWithTrajectories(_G, QuenchTrajectory(χ0,b), QuenchTrajectory(χ0′,b), ε, Δf)
 end
 
-(G::DistributionWithTrajectories)(X::Vec{<:Fl}, X′::Vec{<:Fl}, ε::Fl=0.0)::C = G.distrib_func(  X   ,   X′    , ε)  
-(G::DistributionWithTrajectories)(τ::Fl       , τ′::Fl       , ε::Fl=0.0)::C = G.distrib_func(G.X(τ), G.X′(τ′), ε)
+function (G::DistributionWithTrajectories)(X::Vec{C}, X′::Vec{C})::C
+  d = abs(distance(X, X′))
+  ε = G.ε
+  d <= ε && G._G(X, X′, ε*G.Δf(d/ε))  
+  else      return G._G(X, X′) end
+
+(G::DistributionWithTrajectories)(τ::Fl, τ′::Fl)::C = G(G.X(τ), G.X′(τ′))
 
