@@ -8,12 +8,12 @@ struct NotImplmented <:Exception
   end
 end
 
-function W₀(z::T,z′::T, ε::Fl)::C where {T<:Fl}
+function W₀(z, z′, ε)
   iε = im*ε
-  - im/8*sign(z - z′) - 1/(4π)*(log(cosh((z + z′)/2)) + log(sinh(z - z′ - iε)/2)) # + log(sinh(abs(z - z′ - iε)/2)))
+  - 1/(4π)*(log(cosh((z + z′)/2)) + log(sinh(z - z′ - iε)/2)) # + log(sinh(abs(z - z′ - iε)/2)))
 end
 
-function _W_quench(X::Vec{T}, X′::Vec{T}, ε::Fl)::C where T::C
+function _W_quench(X::Vec{C}, X′::Vec{C}, ε)
   iε = im*ε
   if is_after_quench(X) && is_after_quench(X′) 
     (η,y), (η′,y′) = X, X′
