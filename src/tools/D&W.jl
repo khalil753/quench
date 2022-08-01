@@ -8,47 +8,52 @@ struct NotImplmented <:Exception
   end
 end
 
-function W₀(z::T,z′::T)::C where {T<:Fl}
-  iε = im*1e-1
-  - im/8*sign(z - z′) - 1/(4π)*(log(cosh((z + z′)/2)) + log(sinh(abs(z - z′ + iε)/2)))
+function W₀(z::T,z′::T, ε::Fl)::C where {T<:Fl}
+  iε = im*ε
+  - im/8*sign(z - z′) - 1/(4π)*(log(cosh((z + z′)/2)) + log(sinh(z - z′ - iε)/2)) # + log(sinh(abs(z - z′ - iε)/2)))
 end
 
-is_before_quench(X) = X[1] <  0
-is_after_quench(X)  = X[1] >= 0
-
-function _W_quench(X::Vec{T}, X′::Vec{T})::C where T<:Fl
+function _W_quench(X::Vec{T}, X′::Vec{T}, ε::Fl)::C where T::C
+  iε = im*ε
   if is_after_quench(X) && is_after_quench(X′) 
     (η,y), (η′,y′) = X, X′
-    return W₀(η - y, η′ - y′) + W₀(η + y, η′ + y′)
+    return W₀(η - y, η′ - y′, ε) + W₀(η + y, η′ + y′, ε)
   elseif is_before_quench(X) && is_before_quench(X′)
     Δt, Δx = X - X′ 
-    return -1/4π*(log(abs(Δt^2 - Δx^2))) - im/8*(sign(Δt+Δx) + sign(Δt-Δx))
+    return -1/4π*(log(abs((Δt-iε)^2 - Δx^2))) - im/8*(sign(Δt+Δx) + sign(Δt-Δx))
   else 
     # return 0
     throw(NotImplmented("I haven't implememted the case where x and x′ belong to different spacetime patches")) 
   end
 end
 
-function _W_flat_spacetime(X::Vec{T}, X′::Vec{T})::C where T<:Fl
-  ε = 1e-1
+function _W_flat_spacetime(X::Vec{T}, X′::Vec{T}, ε::T)::C where T<:Fl
+  iε = im*ε
   Δt, Δx = X[1] - X′[1], X[2:end] - X′[2:end]
-  -1/(4*π^2*((Δt - im*ε)^2 - sum(Δx.^2)))
+  -1/(4*π^2*((Δt - iε)^2 - sum(Δx.^2)))
 end
 
-function time_order(F::Function)
-  time_ordered_F(X::Vec{T}, X′::Vec{T}) = X[1] > X′[1] ? F(X,X′) : F(X′,X) 
-  return time_ordered_F
+function time_order_dist(distrib_func::Function)
+  function time_ordered_distrib_func(X::Vec{T}, X′::Vec{T}, ε::T)::C where T<: Fl
+    X[1] > X′[1] ? distrib_func(X,X′,ε) : distrib_func(X′,X,ε) 
+  end
+  return time_ordered_distrib_func
 end
 
 _Ws = Dict("quench" => _W_quench,
            "flat"   => _W_flat_spacetime)
-_Ds = map_dict(time_order, _Ws)
+_Ds = map_dict(time_order_dist, _Ws)
 
-struct CorrFuncWithTrajectories <: Function
-  _G::Function
-  X::AbstractTrajectory; X′::AbstractTrajectory 
+struct DistributionWithTrajectories <: Function
+  distrib_func::Function
+  X ::AbstractTrajectory
+  X′::AbstractTrajectory 
 end
-CorrFuncWithTrajectories(_G, χ0::Fl, χ0′::Fl, b::Fl) = $correlation_func_name(_G, Trajectory(χ0,b), Trajectory(χ0′,b))
+function DistributionWithTrajectories(distrib_func::Function, χ0::Fl, χ0′::Fl, b::Fl) 
+  """ Initialization for quench trajectories"""
+  DistributionWithTrajectories(distrib_func, QuenchTrajectory(χ0,b), QuenchTrajectory(χ0′,b))
+end
 
-(G::CorrFuncWithTrajectories)(x::Vec{<:Fl}, x′::Vec{<:Fl})::C = G._G(x, x′)  
-(G::CorrFuncWithTrajectories)(τ::Fl       , τ′::Fl       )::C = G(G.X(τ), W.X′(τ′))
+(G::DistributionWithTrajectories)(X::Vec{<:Fl}, X′::Vec{<:Fl}, ε::Fl=0.0)::C = G.distrib_func(  X   ,   X′    , ε)  
+(G::DistributionWithTrajectories)(τ::Fl       , τ′::Fl       , ε::Fl=0.0)::C = G.distrib_func(G.X(τ), G.X′(τ′), ε)
+
