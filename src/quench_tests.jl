@@ -1,34 +1,58 @@
-using HCubature, Plots #, QuantumInformation
-include("tools/misc.jl")
-include("tools/params.jl")
+using HCubature, Plots, SpecialFunctions #, QuantumInformation
+include("params.jl")
 include("tools/D&W.jl")
-include("tools/Trajectories.jl")
 include("tools/SwitchingFuncs.jl")
+include("tools/DeformFuncs.jl")
+include("tools/LM_getters.jl")
 
-function plot_inertial_l_and_get_its_integral()
+function get_P_Minkowski()
     """
-    In this test I calculate the transition probability of an inertial observer
-    in flat spacetime. It should be as close to zero as possible. Also, I plot the
-    absolute value of the integrand of the transition function next to it's theoretical 
-    value.
+    In this test I calculate the transition probability as a function of Ω, of an inertial observer
+    in flat spacetime with a gaussian switching function.
     """
-    d = 5
+    d = 4
     initial_τs, final_τs =  [-d, -d], [d, d]
-    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
 
     X = InertialTrajectory(0.0, 0.0, 0.0)
-    W = DistributionWithTrajectories(_Ws["flat"], X, X, dist_ε)
+    W = DistributionWithTrajectories(_Ws["flat"], X, X)
+    χ(τ) = χs["gauss"](τ/σ)
+    df = deform_funcs[deform_func_name]
 
-    l = get_l(W, λ, Ω, χs["one"])
-    x = integrate(l)./(2*d)
-    println(x)
+    Ωs = LinRange(0, 10, 20)
+    P_Ms = []
+    for (i, Ω) in enumerate(Ωs)
+        println("\rDoing Ω number $i")
+        l = get_l(W, λ, Ω, χ, distance_funcs["lorentz"], df, ε_contour)
+        P_M = integrate(l)
+        push!(P_Ms, P_M)
+    end
+    x = max(imag.(P_Ms)...)
+    println("$x")
 
-    g(t) = l([t,0.0])
-    iε = im*dist_ε
-    f(t) = λ^2*exp(-im*Ω*t)/(4π^2*(t - iε)^2)
-    
-    t = LinRange(0,5*dist_ε,100)
-    display(plot(t, [abs ∘ g, abs ∘ f]))
+    P(Ω) = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
+    display(plot(Ωs, [P.(Ωs), real.(P_Ms)]))
+end
+
+function plot_inertial_l()
+    """
+    In this test I calculate the transition probability as a function of Ω, of an inertial observer
+    in flat spacetime with a gaussian switching function.
+    """
+    d = 8
+
+    X = InertialTrajectory(0.0, 0.0, 0.0)
+    W = DistributionWithTrajectories(_Ws["flat"], X, X)
+    χ(τ) = χs["gauss"](τ/σ)
+    df = deform_funcs[deform_func_name]
+
+    Ω = 1
+    l = get_l(W, λ, Ω, χ, distance_funcs["lorentz"], df, ε_contour)
+    _l(t) = l([t,0])
+    _l_th(t) = λ^2*χ(t)*χ(0) * _W_flat_spacetime([t,0], [0,0])
+
+    ts = LinRange(-2,2,100)
+    display(plot(ts, [abs∘_l, abs∘_l_th], ylims=[0,2]))
 end
 
 function plot_accelerated_l()
@@ -38,7 +62,7 @@ function plot_accelerated_l()
     """
     X = AcceleratedTrajectory(1.0, 0.0, 0.0)
     _W = _Ws["flat"]
-    W = DistributionWithTrajectories(_W, X, X, dist_ε)
+    W = DistributionWithTrajectories(_W, X, X)
 
     d = 5
     iε = im*1e-1
@@ -50,15 +74,16 @@ function plot_accelerated_l()
     display(plot(t, [f, g], label=["l_mine" "l_birrel"]))
 end
 
-function plot_probability_vs_Ω()
-    dist_ε = 0.4
-    d = 20*dist_ε
+function get_P_minkowski()
+    ε_W = 0.4
+    d = 20*ε_W
+
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)
 
     X = AcceleratedTrajectory(1.0, 0.0, 0.0)
     _W = _Ws["flat"]
-    W = DistributionWithTrajectories(_W, X, X, dist_ε)
+    W = DistributionWithTrajectories(_W, X, X)
 
     probs, errs = [], []
     Ωs = LinRange(0.1,5,20)
@@ -75,6 +100,6 @@ function plot_probability_vs_Ω()
     probs
 end
 
-# plot_inertial_l_and_get_its_integral()
-# plot_accelerated_l()
-probs =  plot_probability_vs_Ω();
+get_P_Minkowski()
+# plot_inertial_l()
+# probs =  plot_probability_vs_Ω();

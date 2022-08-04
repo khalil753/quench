@@ -1,48 +1,64 @@
 # Abbreviations
+using ForwardDiff
+
 Fl, Vec, C = Float64, Vector, ComplexF64
+VecCFl = Union{Vector{C}, Vector{Fl}}
 
-is_before_quench(X) = X[1] <  0
-is_after_quench(X)  = X[1] >= 0
+struct NotImplmented <:Exception
+  str::String
+  function NotImplmented(str)
+    println(str)    
+  end
+end
 
-function get_crossed_derivative(f::Function, ε::Fl) ::Function
-  fxy(x::Fl, y::Fl)::C = (f(x+ε, y+ε) - f(x+ε, y-ε) - f(x-ε, y+ε) + f(x-ε, y-ε))/(4*ε^2)
+is_before_quench(X) = real(X[1]) <  0
+is_after_quench(X)  = real(X[1]) >= 0
+
+function get_crossed_derivative(f::Function)::Function
+  _f(xs) = f(xs[1], xs[2])
+  Rf, If = real∘_f, imag∘_f
+  fxy(x, y) = ForwardDiff.hessian(Rf, [x,y])[1,2] + im*ForwardDiff.hessian(If, [x,y])[1,2]
 end
 
 map_dict(f::Function, d::Dict)::Dict = Dict([(k, f(v)) for (k, v) in d])
 
-get_l(W, λ, Ω, χ) = τs ->  λ^2*χ(τs[1])*χ(τs[2]) * W(τs[1], τs[2])*exp(-im*Ω*(τs[1] - τs[2]))
-get_m(D, λ, Ω, χ) = τs -> -λ^2*χ(τs[1])*χ(τs[2]) * D(τs[1], τs[2])*exp( im*Ω*(τs[1] + τs[2]))
+ForwardDiff.can_dual(::Type{ComplexF64}) = true
 
-function get_ls(Ws, λ, Ω, χ) 
-  Dict("AA" => real ∘ get_l(Ws["AA"], λ, Ω, χ),
-       "BB" => real ∘ get_l(Ws["BB"], λ, Ω, χ),
-       "AB" =>        get_l(Ws["AB"], λ, Ω, χ))
+function get_Δτ(τs, deformation_function, pole_distance, ε)
+  """This function gives me the complex part to add to τ, iΔτ"""
+  d = pole_distance(τs)
+  if d <= ε Δτ = ε*deformation_function(d/ε) 
+  else      Δτ = 0.0 end
 end
-
-function create_distributions(_Ws, _Ds, wightman_funct_name,
-                              χ0A, χ0B, b, 
-                              dist_ε, numeric_derivative_ε)
-  _W, _D = _Ws[wightman_funct_name], _Ds[wightman_funct_name]
-  Ws = Dict()
-  Ws["AB"] = DistributionWithTrajectories(_W, χ0A, χ0B, b)
-  Ws["AA"] = DistributionWithTrajectories(_W, χ0A, χ0A, b)
-  Ws["BB"] = DistributionWithTrajectories(_W, χ0B, χ0B, b)
-
-  _gcd(f::Function) = get_crossed_derivative(f, numeric_derivative_ε)
-  Wττ′s = map_dict(_gcd, Ws)
-  Dττ′  = _gcd(DistributionWithTrajectories(_D, χ0A, χ0B, b))
-  return  Wττ′s,  Dττ′
-end
-
-function deform_trajectories(X::QuenchTrajectory, X′::QuenchTrajectory, deform_func::Function, ε_contour::Float64)
-  function Z(τ, τ′)
-    Δη, Δy = X(τ) - X′(τ′)
-    if abs(Δη - Δy) < ε_deformation 
-      iΔτ = deform_func(τ, τ′)
-      return τ 
-    else
-      iΔτ = im*ε_deformation*deform_func(τ, τ′)/ε_deformation
-      return τ + iΔτ
-    end
+  
+function complexify(f, deformation_function, pole_distance, ε, get_∇Δτ) 
+  function deformed_f(τs)::C
+      Δτ          = get_Δτ(τs, deformation_function, pole_distance, ε)
+      i∇Δτ, i∇Δτ′ = im.*get_∇Δτ(τs)     
+      τ, τ′ = τs[1], τs[2] 
+      if Δτ > 0 return f([τ - im*Δτ, τ′ + im*Δτ])*(1 - i∇Δτ)*(1 + i∇Δτ′)
+      else      return f([τ        , τ′        ])*(1 - i∇Δτ)*(1 + i∇Δτ′) end
   end
+  return deformed_f
+end
+
+function complexify(f, deformation_function, pole_distance, ε) 
+  _get_Δτ(τs) = get_Δτ(τs, deformation_function, pole_distance, ε)
+  get_∇Δτ(τs) = ForwardDiff.gradient(_get_Δτ, τs)
+  return complexify(f, deformation_function, pole_distance, ε, get_∇Δτ)
+end
+
+complexify(f, ε) = τs -> f([τ[1] - im*ε, τ[1] + im*ε])
+
+function create_distributions(_W, _D, χ0A, χ0B, b)
+  XA, XB = QuenchTrajectory(χ0A, b), QuenchTrajectory(χ0B, b)
+  Ws = Dict()
+  Ws["AB"] = DistributionWithTrajectories(_W, XA, XB)
+  Ws["AA"] = DistributionWithTrajectories(_W, XA, XA)
+  Ws["BB"] = DistributionWithTrajectories(_W, XB, XB)
+
+  _gcd = get_crossed_derivative
+  Wττ′s = map_dict(_gcd, Ws)
+  Dττ′  = _gcd(DistributionWithTrajectories(_D, XA, XB))
+  return  Wττ′s,  Dττ′
 end
