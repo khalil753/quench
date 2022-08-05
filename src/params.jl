@@ -3,7 +3,7 @@ const wightman_funct_name = "quench"
 const ε_W = 1e-1
 
 # Switching function params
-const σ = 1
+const σ = 1.0
 const switching_func_name = "cos4"
 
 # Quench regulator
@@ -17,7 +17,7 @@ const Ω = 1.5
 # ΩA, ΩB = 1.0, 1.0
 
 # Coupling strength of detector
-const λ = 0.1
+const λ = 1.0
 
 # Delta for numerical derivation 
 const numeric_derivative_ε = 1e-5
