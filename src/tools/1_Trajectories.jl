@@ -34,7 +34,7 @@ function quench_distance(X, X′)
   end
 end
 
-distance_funcs = Dict("lorentz" => lorentz_distance,
-                      "quench"  => quench_distance)
+const distance_funcs = Dict("lorentz" => lorentz_distance,
+                            "quench"  => quench_distance)
 
 

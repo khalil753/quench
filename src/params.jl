@@ -1,6 +1,6 @@
 # WightmanFunction params
 const wightman_funct_name = "quench"
-const ε_W = 1e-1
+# const ε_W = 1e-1
 
 # Switching function params
 const σ = 1.0
@@ -17,10 +17,10 @@ const Ω = 1.5
 # ΩA, ΩB = 1.0, 1.0
 
 # Coupling strength of detector
-const λ = 1.0
+const λ = 1e-1
 
 # Delta for numerical derivation 
-const numeric_derivative_ε = 1e-5
+const numeric_derivative_ε = 1e-4
 
 # Integrator params
 const initial_τs, final_τs =  [0.1,0.1], [σ, σ]

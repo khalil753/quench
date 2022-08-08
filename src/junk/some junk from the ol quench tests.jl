@@ -43,3 +43,36 @@ function get_P_minkowski()
     display(plot(Ωs, [probs, boltz.(Ωs), over_boltz.(Ωs)], label=["Numeric" "Boltzmann" "over fitted Boltzmann"]))
     probs
 end
+
+function get_M_Minkowski()
+    """
+    In this test I calculate the transition probability as a function of Ω, of an inertial observer
+    in flat spacetime with a gaussian switching function.
+    """
+    d = 3.5*σ    
+    df = deform_funcs["cos2"]
+    ε_contour = 1e-1
+    L = 1.0
+
+    initial_τs, final_τs =  [-d, -d], [d, d]
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
+
+    XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
+    D = DistributionWithTrajectories(_Ds["flat"], XA, XB)
+    χ(τ) = χs["gauss"](τ/σ)
+
+    Ωs = LinRange(0, 5, 6)
+    Ms = []
+    for (i, Ω) in enumerate(Ωs)
+        println("\rDoing Ω number $i")
+        m = get_m(D, λ, Ω, χ)
+        # m = complexify_l_or_m(m, ε_contour)
+        m = complexify_l_or_m(m, df, distance_funcs["lorentz"], ε_contour)
+        M = integrate(m)
+        push!(Ms, M)
+    end
+
+    M(Ω) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
+    display(plot(Ωs, [(abs ∘ M).(Ωs), abs.(Ms)], labels=["theoretical" "numerical"]))
+    return Ωs, Ms, M.(Ωs)
+end

@@ -1,5 +1,5 @@
 using ForwardDiff
-include("Trajectories.jl")
+include("1_Trajectories.jl")
 
 W₀(z::C , z′::C ) = - 1/4π*(log((cosh((z + z′))/2)*sinh(   (z - z′)/2))) 
 W₀(z    , z′    ) = - 1/4π*(log((cosh((z + z′))/2)*sinh(abs(z - z′)/2))) - im/8*sign(z - z′)
