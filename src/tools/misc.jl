@@ -39,9 +39,9 @@ function complexify(f, deformation_function, pole_distance, ε, get_∇Δτ)
       Δτ          = get_Δτ(τs, deformation_function, pole_distance, ε)
       i∇Δτ, i∇Δτ′ = im.*get_∇Δτ(τs)     
       τ, τ′ = τs[1], τs[2] 
-      return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
-      # if Δτ > 0 return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
-      # else      return f([τ        , τ′])*(1 - i∇Δτ) end
+      # return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
+      if Δτ > 0 return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
+      else      return f([τ        , τ′])*(1 - i∇Δτ) end
   end
   return deformed_f
 end
