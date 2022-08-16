@@ -20,7 +20,7 @@ function initialize_stuff()
   Wττ′s, Dττ′ = create_distributions(_Ws[space_time], _Ds[space_time], 
                                      χ0A, χ0B, b, 
                                      ε_numeric_derivative)
-  χ(τ) = χs[switching_func_name](τ/σ)
+  χ(τ) = χs[switching_func_name]((τ)/σ)
   df = deform_funcs[deform_func_name]
   dist_func = distance_funcs[space_time]
   return Wττ′s, Dττ′, χ, df, dist_func
@@ -34,24 +34,14 @@ function get_Δτ(τs, deformation_function, pole_distance, ε)
   else           Δτ = 0.0 end
 end
 
-# function complexify(f, deformation_function, pole_distance, ε, get_∇Δτ) 
-#   function deformed_f(τs)::C
-#       Δτ      = get_Δτ(τs, deformation_function, pole_distance, ε)
-#       i∇Δτ, _ = im.*get_∇Δτ(τs)     
-#       τ, τ′   = τs 
-#       if Δτ > 0 return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
-#       else      return f([τ        , τ′])*(1 - i∇Δτ) end
-#   end
-#   return deformed_f
-# end
-
 function complexify(f, deformation_function, pole_distance, ε, get_∇Δτ) 
   function deformed_f(τs)::C
       Δτ          = get_Δτ(τs, deformation_function, pole_distance, ε)
       i∇Δτ, i∇Δτ′ = im.*get_∇Δτ(τs)     
       τ, τ′ = τs[1], τs[2] 
-      if Δτ > 0 return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
-      else      return f([τ        , τ′])*(1 - i∇Δτ) end
+      return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
+      # if Δτ > 0 return f([τ - im*Δτ, τ′])*(1 - i∇Δτ)
+      # else      return f([τ        , τ′])*(1 - i∇Δτ) end
   end
   return deformed_f
 end
@@ -83,4 +73,13 @@ function create_distributions(_W, _D, χ0A, χ0B, b, ε_numeric_derivative)
   Wττ′s = map_dict(_gcd, Ws)
   Dττ′  = _gcd(DistributionWithTrajectories(_D, XA, XB))
   return  Wττ′s,  Dττ′
+end
+
+function negativity( ρ) 
+  ρ22, ρ33 = real(ρ[2,2]), real(ρ[3,3])
+  max(0, sqrt(abs2(ρ[1,4]) + ((ρ22 - ρ33)/2)^2) - (ρ22 + ρ33)/2)
+end
+function concurrence(ρ)
+  ρ22, ρ33 = real(ρ[2,2]), real(ρ[3,3])
+  2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end
