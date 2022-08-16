@@ -67,7 +67,7 @@ function get_M_Minkowski()
         println("\rDoing Ω number $i")
         m = get_m(D, λ, Ω, χ)
         # m = complexify_l_or_m(m, ε_contour)
-        m = complexify_l_or_m(m, df, distance_funcs["lorentz"], ε_contour)
+        m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
         M = integrate(m)
         push!(Ms, M)
     end

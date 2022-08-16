@@ -29,12 +29,14 @@ lorentz_distance(X, X′) = (X[1] - X′[1])^2 - sum((X[2:end] - X′[2:end]).^2
 function quench_distance(X, X′) 
   if is_after_quench(X) && is_after_quench(X′) || is_before_quench(X) && is_before_quench(X′)
     lorentz_distance(X, X′)
-  else throw(NotImplmented("I haven't implemented the distance between spacetime points when they are 
-                            \nin different patches of the quench"))
+  else 
+    warn("I haven't implemented the distance between spacetime points when they are 
+                            \nin different patches of the quench")
+    0.0
   end
 end
 
-const distance_funcs = Dict("lorentz" => lorentz_distance,
-                            "quench"  => quench_distance)
+distance_funcs = Dict("flat"   => lorentz_distance,
+                      "quench" => quench_distance)
 
 

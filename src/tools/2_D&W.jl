@@ -12,8 +12,8 @@ function _W_quench(X, X′)
     Δt, Δx = X - X′ 
     return -1/4π*(log((Δt)^2 - Δx^2))
   else 
-    # return 0
-    throw(NotImplmented("I haven't implememted the case where x and x′ belong to different spacetime patches")) 
+    warn("Watch out, I haven't implememted the case where x and x′ belong to different spacetime patches")
+    return 0
   end
 end
 

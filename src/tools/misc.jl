@@ -16,13 +16,24 @@ is_after_quench(X)  = real(X[1]) >= 0
 
 map_dict(f::Function, d::Dict)::Dict = Dict([(k, f(v)) for (k, v) in d])
 
+function initialize_stuff()
+  Wττ′s, Dττ′ = create_distributions(_Ws[space_time], _Ds[space_time], 
+                                     χ0A, χ0B, b, 
+                                     ε_numeric_derivative)
+  χ(τ) = χs[switching_func_name](τ/σ)
+  df = deform_funcs[deform_func_name]
+  dist_func = distance_funcs[space_time]
+  return Wττ′s, Dττ′, χ, df, dist_func
+end
+
+
 function get_Δτ(τs, deformation_function, pole_distance, ε)
   """This function gives me the complex part to add to τ, iΔτ"""
   d = pole_distance(τs)
   if d^2 <= ε^2  Δτ = ε*deformation_function(d/ε)
   else           Δτ = 0.0 end
 end
-  
+
 # function complexify(f, deformation_function, pole_distance, ε, get_∇Δτ) 
 #   function deformed_f(τs)::C
 #       Δτ      = get_Δτ(τs, deformation_function, pole_distance, ε)

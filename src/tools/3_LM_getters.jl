@@ -1,5 +1,5 @@
 include("misc.jl")
-include("1_Trajectories.jl")
+# include("1_Trajectories.jl")
 include("2_D&W.jl")
 
 get_Xs(W::DistributionWithTrajectories) = W.X, W.X′

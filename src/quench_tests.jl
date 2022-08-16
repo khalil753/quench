@@ -84,9 +84,10 @@ function get_M_vs_L_Minkowski()
     In this test I calculate the transition probability as a function of Ω, of an inertial observer
     in flat spacetime with a gaussian switching function.
     """
+    σ = 0.1
     d = 5*σ    
     df = deform_funcs["cos2"]
-    ε_contour = 1e-1
+    ε_contour = 5e-3
 
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
@@ -109,7 +110,7 @@ function get_M_vs_L_Minkowski()
     M(L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     p = plot(Ls, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, 2e-4])
     display(p)
-    savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$ε_contour.png")
+    savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
     return Ls, Ms, M.(Ls)
 end
 
@@ -158,7 +159,7 @@ function plot_inertial_m()
 end
 
 # get_P_Minkowski();
-# Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
-Ls, Ms_num, Ms_th = get_M_vs_L_Minkowski();
+Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
+# Ls, Ms_num, Ms_th = get_M_vs_L_Minkowski();
 # plot_inertial_l();
 # plot_inertial_m();
