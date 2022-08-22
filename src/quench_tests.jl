@@ -85,15 +85,15 @@ function get_M_vs_L_Minkowski()
     in flat spacetime with a gaussian switching function.
     """
     λ = 1 
-    σ = 1
+    σ = 0.1
     d = 5*σ    
-    df = deform_funcs["cos2"]
-    ε_contour = 1e-3
+    df = deform_funcs["triangle"]
+    ε_contour = 1e-1
 
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
 
-    Ls = LinRange(0.01, 7.5, 30)
+    Ls = LinRange(σ/10, 7σ, 20)
     Ms = []
     for (i, L) in enumerate(Ls)
         XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
@@ -102,14 +102,14 @@ function get_M_vs_L_Minkowski()
 
         println("\rDoing L number $i: L = $L")
         m = get_m(D, λ, Ω, χ)
-        m = complexify_l_or_m(m, ε_contour)
-        # m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
+        # m = complexify_l_or_m(m, ε_contour)
+        m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
         M = integrate(m)
         push!(Ms, M)
     end
 
     M(L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
-    p = plot(Ls, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, 2e-1])
+    p = plot(Ls/σ, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
     display(p)
     savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
     return Ls, Ms, M.(Ls)
