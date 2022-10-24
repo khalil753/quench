@@ -1,4 +1,4 @@
-using HCubature, Plots, SpecialFunctions
+using HCubature, Plots, SpecialFunctions, ProgressBars
 include("params.jl")
 include("tools/2_D&W.jl")
 include("tools/3_LM_getters.jl")
@@ -85,13 +85,13 @@ function get_M_vs_L_Minkowski()
     in flat spacetime with a gaussian switching function.
     """
     λ = 1 
-    σ = 0.1
+    σ = 1
     d = 5*σ    
     df = deform_funcs["triangle"]
-    ε_contour = 1e-1
+    ε_contour = 5e-3
 
     initial_τs, final_τs =  [-d, -d], [d, d]
-    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=500000 , rtol=int_tol)[1]
 
     Ls = LinRange(σ/10, 7σ, 20)
     Ms = []
@@ -102,17 +102,94 @@ function get_M_vs_L_Minkowski()
 
         println("\rDoing L number $i: L = $L")
         m = get_m(D, λ, Ω, χ)
-        # m = complexify_l_or_m(m, ε_contour)
-        m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
+        m = complexify_l_or_m(m, ε_contour)
+        # m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
         M = integrate(m)
         push!(Ms, M)
     end
 
     M(L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
-    p = plot(Ls/σ, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
+    p = plot(Ls, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
     display(p)
     savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
-    return Ls, Ms, M.(Ls)
+    # return Ls, Ms, M.(Ls)
+end
+
+function plot_C_vs_L()
+    λ = 1.0 
+    σ = 1.0
+    d = 5*σ    
+    ε_contour = 1e-1
+    χ(τ) = χs["gauss"](τ/σ)
+
+    initial_τs, final_τs =  [-d, -d], [d, d]
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
+    Cplify(f) = complexify_l_or_m(f, ε_contour)
+
+    separations = LinRange(σ/10, 7σ, 20)
+    LABs = []
+    for separation in separations
+        XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(separation, 0.0, 0.0)
+        Ws = initialize_Ws(_Ws["flat"], XA, XB)
+        ls = get_ls(Ws, λ, Ω, χ)
+        ls = map_dict(Cplify, ls) 
+        LAB = integrate(ls["AB"])
+        push!(LABs, LAB)
+    end
+
+    C_func(Ω, L) = λ^2/4√π*σ/L*exp(-L^2/4σ^2)* (imag(exp(im*L*Ω) * erf(im*L/2σ + σ*Ω)) - sin(Ω*L))
+    p = plot(separations, [abs.(LABs), abs.(C_func.(Ω, separations))])
+    display(p)
+    savefig(p, "plots\\C_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
+end
+
+function get_concurrence()
+    λ = 1.0
+    σ = 1
+    d = 5*σ    
+    initial_τs, final_τs =  [-d, -d], [d, d]
+    ε_contour = 1e-1
+    χ(τ) = χs["gauss"](τ/σ)
+
+    M_func(Ω, L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
+    P(Ω)         = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
+    C_func(Ω, L) = λ^2/4√π*σ/L*exp(-L^2/4σ^2)* (imag(exp(im*L*Ω) * erf(im*L/2σ + σ*Ω)) - sin(Ω*L))
+
+    integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
+    Cplify(f)    = complexify_l_or_m(f, ε_contour)
+
+    ΔLs = LinRange(3σ, 4.5σ, 10)
+    # ΔLs = LinRange(0.5σ,  2σ, 10)
+    Ωs  = LinRange(0/σ, 3/σ, 10)
+    Cs = zeros(length(Ωs), length(ΔLs))
+    Cs_th = zeros(length(Ωs), length(ΔLs))
+    for (i, Ω) in tqdm(enumerate(Ωs))
+        for (j, ΔL) in tqdm(enumerate(ΔLs))
+            XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(ΔL, 0.0, 0.0)
+            D, Ws = DistributionWithTrajectories(_Ds["flat"], XA, XB), initialize_Ws(_Ws["flat"], XA, XB)
+            m, ls = get_m(D, λ, Ω, χ), get_ls(Ws, λ, Ω, χ)
+            m, ls = Cplify(m)        , map_dict(Cplify, ls) 
+            M, Ls = integrate(m)     , map_dict(integrate, ls)
+
+            ρ_th = [       1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
+                                  0                 P(Ω)    C_func(Ω, ΔL)               0;
+                                  0  conj(C_func(Ω, ΔL))             P(Ω)               0;
+                  conj(M_func(Ω, ΔL))                 0                0                0]
+
+            ρ = [1 - Ls["AA"] - Ls["BB"]              0          0   conj(M);
+                                       0       Ls["AA"]   Ls["AB"]         0;
+                                       0  conj(Ls["AB"])  Ls["BB"]         0;
+                                       M              0          0         0]                                       
+                    
+            Cs[i,j]    = concurrence(ρ)
+            Cs_th[i,j] = concurrence(ρ_th)
+        end
+    end
+
+    p = plot(contourf(ΔLs, Ωs, Cs, ylabel="Ω", xlabel="ΔL"), contourf(ΔLs, Ωs, Cs_th, ylabel="Ω", xlabel="ΔL"), size=(3200,1800), linewidth=0, xtickfontsize=18, ytickfontsize=18)
+    display(p)
+    savefig(p, "plots\\concurrence_heatmap.png")
+    Cs, Cs_th
 end
 
 function plot_inertial_l()
@@ -162,5 +239,7 @@ end
 # get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
 get_M_vs_L_Minkowski();
+# ρs, Cs, Cs_th = get_concurrence();
+# plot_C_vs_L()
 # plot_inertial_l();
 # plot_inertial_m();

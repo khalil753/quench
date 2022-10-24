@@ -1,4 +1,4 @@
-include("misc.jl")
+# include("misc.jl")
 # include("1_Trajectories.jl")
 include("2_D&W.jl")
 
@@ -20,6 +20,7 @@ function get_l(W, λ, Ω, χ)
   γA, γB = get_γ.(get_Xs(W))
   l(τs) =  λ^2*χ(τs[1])*χ(τs[2]) * W(τs[1], τs[2])*exp(-im*Ω*(τs[1] - τs[2])) * γA(τs[1])*γB(τs[2])
 end
+
 function get_m(D, λ, Ω, χ) 
   γA, γB = get_γ.(get_Xs(D))
   m(τs) = -λ^2*χ(τs[1])*χ(τs[2]) * D(τs[1], τs[2])*exp( im*Ω*(τs[1] + τs[2])) * γA(τs[1])*γB(τs[2])
@@ -45,6 +46,7 @@ function get_pole_distance(l_or_m, dist_func)
   X, X′ = get_Xs(W)
   pole_distance(τs) = dist_func(X(τs[1]), X′(τs[2]))
 end
+
 function complexify_l_or_m(l_or_m, deform_func, dist_func, ε)
   pole_distance = get_pole_distance(l_or_m, dist_func)
   complexify(l_or_m, deform_func, pole_distance, ε)   
