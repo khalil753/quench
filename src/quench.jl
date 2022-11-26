@@ -11,8 +11,7 @@ include("tools/DeformFuncs.jl")
 df = deform_funcs[deform_func_name]
 dist_func = distance_funcs[space_time]
 
-integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=20000, rtol=int_tol)[1]
-# Cplify(l_or_m) = complexify_l_or_m(l_or_m, df, dist_func, ε_contour) # I'm writing this to shorten the name and to be able to use map_dict that requires a functions with a single argument
+integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=maxevals, rtol=int_tol)[1]
 Cplify(l_or_m) = complexify_l_or_m(l_or_m, ε_contour) # I'm writing this to shorten the name and to be able to use map_dict that requires a functions with a single argument
 
 ρs = []

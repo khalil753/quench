@@ -31,7 +31,8 @@ elseif space_time=="quench" const initial_τs, final_τs = [max(σ*1e-2, switchi
                                                          [switching_function_center + 5σ, 
                                                           switching_function_center + 5σ] end
 const int_tol = 1e-3
+const maxevals = 50000
 
 # Complex contour params
-const ε_contour = 1e-1
+const ε_contour = 1e-2
 const deform_func_name = "cos4"

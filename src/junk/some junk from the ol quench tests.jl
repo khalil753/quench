@@ -76,3 +76,9 @@ function get_M_Minkowski()
     display(plot(Ωs, [(abs ∘ M).(Ωs), abs.(Ms)], labels=["theoretical" "numerical"]))
     return Ωs, Ms, M.(Ωs)
 end
+
+# function get_crossed_derivative(f::Function)::Function
+#   _f(xs) = f(xs[1], xs[2])
+#   Rf, If = real∘_f, imag∘_f
+#   fxy(x, y) = ForwardDiff.hessian(Rf, [x,y])[1,2] + im*ForwardDiff.hessian(If, [x,y])[1,2]
+# end
