@@ -12,7 +12,7 @@ function plot_accelerated_l()
     iε = im*1e-1
     t = LinRange(0,d,500)
 
-    l = real ∘ get_l(W, 1, 1, χs["one"])
+    l = real ∘ get_l(W, 1, 1, switching_funcs["one"])
     f(t) = l([t,0.0])
     g(t) = real(-cos(t)/(sinh(t/2 - 0.50*iε))^2)/16/π^2
     display(plot(t, [f, g], label=["l_mine" "l_birrel"]))
@@ -32,7 +32,7 @@ function get_P_minkowski()
     probs, errs = [], []
     Ωs = LinRange(0.1,5,20)
     for Ω in Ωs
-        l = real ∘ get_l(W, 1, Ω, χs["one"])
+        l = real ∘ get_l(W, 1, Ω, switching_funcs["one"])
         x = integrate(l)./(2*d)
         println(x)
         push!(probs,x[1]); push!(errs,x[2])
@@ -59,7 +59,7 @@ function get_M_Minkowski()
 
     XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
     D = DistributionWithTrajectories(_Ds["flat"], XA, XB)
-    χ(τ) = χs["gauss"](τ/σ)
+    χ(τ) = switching_funcs["gauss"](τ/σ)
 
     Ωs = LinRange(0, 5, 6)
     Ms = []

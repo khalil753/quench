@@ -71,5 +71,6 @@ function negativity( ρ)
 end
 function concurrence(ρ)
   ρ22, ρ33 = real(ρ[2,2]), real(ρ[3,3])
+  # ρ22, ρ33 = max(real(ρ[2,2]), 0), max(real(ρ[3,3]), 0)
   2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end

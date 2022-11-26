@@ -15,7 +15,7 @@ function (W::_W)(t, t′)
 end
 
 θ(t) = t>=0 ? 1.0 : 0.0
-χ = χs["gauss"]
+χ = switching_funcs["gauss"]
 
 Ls = LinRange(1/10, 5, 20)
 Ms = []

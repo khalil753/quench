@@ -6,7 +6,10 @@ elseif space_time=="flat"   const with_derivative_coupling = false end
 
 # Switching function params
 const σ = 1.0
-const switching_func_name = "gauss"
+const switching_func_name = "cos4"
+const switching_function_center = 2σ
+# const switching_function_center_A = 0σ
+# const switching_function_center_B = 0σ
 
 # Quench regulator
 const b = 0.01
@@ -22,11 +25,14 @@ const Ω = 1.5
 const λ = 1.0
 
 # Delta for numerical derivation 
-const ε_numeric_derivative = 1e-4
+const ε_numeric_derivative = 1e-3
 
 # Integrator params
 if     space_time=="flat"   const initial_τs, final_τs = [-5σ, -5σ], [5σ, 5σ]
-elseif space_time=="quench" const initial_τs, final_τs = [σ*1e-2, σ*1e-2], [5σ, 5σ] end
+elseif space_time=="quench" const initial_τs, final_τs = [max(σ*1e-2, switching_function_center - 5σ),
+                                                          max(σ*1e-2, switching_function_center - 5σ)], 
+                                                         [switching_function_center + 5σ, 
+                                                          switching_function_center + 5σ] end
 const int_tol = 1e-3
 
 # Complex contour params

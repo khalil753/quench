@@ -20,15 +20,15 @@ function get_P_Minkowski()
 
     X = InertialTrajectory(0.0, 0.0, 0.0)
     W = DistributionWithTrajectories(_Ws["flat"], X, X)
-    χ(τ) = χs["gauss"](τ/σ)
+    χ(τ) = switching_funcs["gauss"](τ/σ)
 
     Ωs = LinRange(0, 2.5, 30)
     P_Ms = []
     for (i, Ω) in enumerate(Ωs)
         println("\rDoing Ω number $i")
         l = get_l(W, λ, Ω, χ)
-        # l = complexify_l_or_m(l, ε_contour)
-        l = complexify_l_or_m(l, df, distance_funcs["flat"], ε_contour)
+        l = complexify_l_or_m(l, ε_contour)
+        # l = complexify_l_or_m(l, df, distance_funcs["flat"], ε_contour)
         P_M = integrate(l)
         push!(P_Ms, P_M)
     end
@@ -58,7 +58,7 @@ function get_M_vs_Ω_Minkowski()
 
     XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
     D = DistributionWithTrajectories(_Ds["flat"], XA, XB)
-    χ(τ) = χs["gauss"](τ/σ)
+    χ(τ) = switching_funcs["gauss"](τ/σ)
 
     Ωs = LinRange(0, 2.5, 30)
     Ms = []
@@ -93,12 +93,12 @@ function get_M_vs_L_Minkowski()
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=500000 , rtol=int_tol)[1]
 
-    Ls = LinRange(σ/10, 7σ, 20)
+    Ls = LinRange(σ/10, 2.5σ, 20)
     Ms = []
     for (i, L) in enumerate(Ls)
         XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
         D = DistributionWithTrajectories(_Ds["flat"], XA, XB)
-        χ(τ) = χs["gauss"](τ/σ)
+        χ(τ) = switching_funcs["gauss"](τ/σ)
 
         println("\rDoing L number $i: L = $L")
         m = get_m(D, λ, Ω, χ)
@@ -120,7 +120,7 @@ function plot_C_vs_L()
     σ = 1.0
     d = 5*σ    
     ε_contour = 1e-1
-    χ(τ) = χs["gauss"](τ/σ)
+    χ(τ) = switching_funcs["gauss"](τ/σ)
 
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
@@ -148,8 +148,8 @@ function get_concurrence()
     σ = 1
     d = 5*σ    
     initial_τs, final_τs =  [-d, -d], [d, d]
-    ε_contour = 1e-1
-    χ(τ) = χs["gauss"](τ/σ)
+    ε_contour = 1e-2
+    χ(τ) = switching_funcs["gauss"](τ/σ)
 
     M_func(Ω, L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     P(Ω)         = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
@@ -158,9 +158,9 @@ function get_concurrence()
     integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
     Cplify(f)    = complexify_l_or_m(f, ε_contour)
 
-    ΔLs = LinRange(3σ, 4.5σ, 10)
+    ΔLs = LinRange(0.5σ, 2σ, 10)
     # ΔLs = LinRange(0.5σ,  2σ, 10)
-    Ωs  = LinRange(0/σ, 3/σ, 10)
+    Ωs  = LinRange(-3/σ, 3/σ, 10)
     Cs = zeros(length(Ωs), length(ΔLs))
     Cs_th = zeros(length(Ωs), length(ΔLs))
     for (i, Ω) in tqdm(enumerate(Ωs))
@@ -188,7 +188,56 @@ function get_concurrence()
 
     p = plot(contourf(ΔLs, Ωs, Cs, ylabel="Ω", xlabel="ΔL"), contourf(ΔLs, Ωs, Cs_th, ylabel="Ω", xlabel="ΔL"), size=(3200,1800), linewidth=0, xtickfontsize=18, ytickfontsize=18)
     display(p)
-    savefig(p, "plots\\concurrence_heatmap.png")
+    savefig(p, "plots\\flat_concurrence_heatmap.png")
+    Cs, Cs_th
+end
+
+function get_divergent_concurrence()
+    λ = 1.0
+    σ = 1
+    d = 5*σ    
+    initial_τs, final_τs =  [0, 0], [d, d]
+    ε_contour = 1e-3
+    χ(τ) = switching_funcs["gauss"](τ/σ)
+
+    M_func(Ω, L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
+    P(Ω)         = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
+    C_func(Ω, L) = λ^2/4√π*σ/L*exp(-L^2/4σ^2)* (imag(exp(im*L*Ω) * erf(im*L/2σ + σ*Ω)) - sin(Ω*L))
+
+    integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
+    Cplify(f)    = complexify_l_or_m(f, ε_contour)
+
+    ΔLs = LinRange(0.5σ, 2σ, 10)
+    # ΔLs = LinRange(0.5σ,  2σ, 10)
+    Ωs  = LinRange(-3/σ, 3/σ, 10)
+    Cs = zeros(length(Ωs), length(ΔLs))
+    Cs_th = zeros(length(Ωs), length(ΔLs))
+    for (i, Ω) in tqdm(enumerate(Ωs))
+        for (j, ΔL) in tqdm(enumerate(ΔLs))
+            XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(ΔL, 0.0, 0.0)
+            D, Ws = DistributionWithTrajectories(_Ds["flat"], XA, XB), initialize_Ws(_Ws["flat"], XA, XB)
+            m, ls = get_m(D, λ, Ω, χ), get_ls(Ws, λ, Ω, χ)
+            m, ls = Cplify(m)        , map_dict(Cplify, ls) 
+            M, Ls = integrate(m)     , map_dict(integrate, ls)
+
+            ρ_th = [       1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
+                                  0                 P(Ω)    C_func(Ω, ΔL)               0;
+                                  0  conj(C_func(Ω, ΔL))             P(Ω)               0;
+                  conj(M_func(Ω, ΔL))                 0                0                0]
+
+            ρ = [1 - Ls["AA"] - Ls["BB"]              0          0   conj(M);
+                                       0       Ls["AA"]   Ls["AB"]         0;
+                                       0  conj(Ls["AB"])  Ls["BB"]         0;
+                                       M              0          0         0]                                       
+                    
+            Cs[i,j]    = concurrence(ρ)
+            Cs_th[i,j] = concurrence(ρ_th)
+        end
+    end
+
+    p = plot(contourf(ΔLs, Ωs, Cs, ylabel="Ω", xlabel="ΔL"), contourf(ΔLs, Ωs, Cs_th, ylabel="Ω", xlabel="ΔL"), size=(3200,1800), linewidth=0, xtickfontsize=18, ytickfontsize=18)
+    display(p)
+    savefig(p, "plots\\flat_divergent_concurrence_heatmap.png")
     Cs, Cs_th
 end
 
@@ -200,7 +249,7 @@ function plot_inertial_l()
     X = InertialTrajectory(0.0, 0.0, 0.0)
     W = DistributionWithTrajectories(_Ws["flat"], X, X)
 
-    χ(τ) = χs["gauss"](τ/σ)
+    χ(τ) = switching_funcs["gauss"](τ/σ)
     df = deform_funcs["triangle"]
     Ω = 1
     l = get_l(W, λ, Ω, χ)
@@ -222,7 +271,7 @@ function plot_inertial_m()
     L = 1.0
     XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
     W = DistributionWithTrajectories(_Ws["flat"], XA, XB)
-    χ(τ) = χs["gauss"](τ/σ)
+    χ(τ) = switching_funcs["gauss"](τ/σ)
 
     df = deform_funcs["triangle"]
     Ω = 1
@@ -238,8 +287,9 @@ end
 
 # get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
-get_M_vs_L_Minkowski();
+# get_M_vs_L_Minkowski();
 # ρs, Cs, Cs_th = get_concurrence();
+get_divergent_concurrence();
 # plot_C_vs_L()
 # plot_inertial_l();
 # plot_inertial_m();
