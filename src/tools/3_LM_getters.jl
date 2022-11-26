@@ -3,6 +3,7 @@
 include("2_D&W.jl")
 
 get_Xs(W::DistributionWithTrajectories) = W.X, W.X′
+
 function get_Xs(Wττ′) 
   try 
     Wττ′.Rf.inner.f.X, Wττ′.Rf.inner.f.X′
@@ -13,12 +14,9 @@ function get_Xs(Wττ′)
   end
 end
 
-get_γ(X::InertialTrajectory) = τ -> 1
-get_γ(X::QuenchTrajectory)   = τ -> 1/X.χ0
-
 function get_l(W, λ, Ω, χ)  
-  γA, γB = get_γ.(get_Xs(W))
-  l(τs) =  λ^2*χ(τs[1])*χ(τs[2]) * W(τs[1], τs[2])*exp(-im*Ω*(τs[1] - τs[2])) * γA(τs[1])*γB(τs[2])
+  γD, γD′ = get_γ.(get_Xs(W))
+  l(τs) =  λ^2*χ(τs[1])*χ(τs[2]) * W(τs[1], τs[2])*exp(-im*Ω*(τs[1] - τs[2])) * γD(τs[1])*γD′(τs[2])
 end
 
 function get_m(D, λ, Ω, χ) 

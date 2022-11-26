@@ -16,8 +16,6 @@ integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=20000, rtol=int_tol
 Cplify(l_or_m) = complexify_l_or_m(l_or_m, ε_contour) # I'm writing this to shorten the name and to be able to use map_dict that requires a functions with a single argument
 
 ρs = []
-if     space_time=="quench" Ωs, χ0Bs = LinRange(-1/σ, 15/σ, 8), LinRange(χ0A + 0.5σ, χ0A + 2.5σ, 8)
-elseif space_time=="flat"   Ωs, χ0Bs = LinRange(-3/σ,  3/σ, 20), LinRange(0.5σ, 2σ, 20) end
 Cs, Ns, = zeros(length(Ωs), length(χ0Bs)), zeros(length(Ωs), length(χ0Bs))
 # PAs, PBs = zeros(length(Ωs)), zeros(length(Ωs), length(χ0Bs))
 for (i, Ω) in tqdm(enumerate(Ωs))

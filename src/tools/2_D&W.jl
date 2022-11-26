@@ -22,9 +22,6 @@ function _W_flat_spacetime(X, X′)
   -1/(4*π^2*(Δt^2 - sum(Δx.^2)))
 end
 
-function _W_swartchild()
-end
-
 function _time_order(W::Function)
   """This function creates a new time_ordered_W which is time oredered (duh)"""
   time_ordered_W(X, X′) = real(X[1]) > real(X′[1]) ? W(X,X′) : W(conj(X′),conj(X)) 

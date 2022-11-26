@@ -1,25 +1,22 @@
 # WightmanFunction params
-const space_time = "quench"
+const space_time = "flat"
 if     space_time=="quench" const with_derivative_coupling = true
 elseif space_time=="flat"   const with_derivative_coupling = false end
-# const ε_W = 1e-1
 
 # Switching function params
 const σ = 1.0
-const switching_func_name = "cos4"
-const switching_function_center = 2σ
+const switching_func_name = "gauss"
+const switching_function_center = 0σ
 # const switching_function_center_A = 0σ
 # const switching_function_center_B = 0σ
 
 # Quench regulator
 const b = 0.01
 
-# Initial detector positions
-const χ0A, χ0B = 1.0, 2.0
-
-# Detector frequencies
-const Ω = 1.5
-# ΩA, ΩB = 1.0, 1.0
+# Detector frequencies and Initial positions
+const χ0A = 1.0
+if     space_time=="quench" Ωs, χ0Bs = LinRange(-1/σ, 15/σ, 8), LinRange(χ0A + 0.5σ, χ0A + 2.5σ, 8)
+elseif space_time=="flat"   Ωs, χ0Bs = LinRange(-3/σ,  3/σ, 8), LinRange(0.5σ      , 2σ        , 8) end
 
 # Coupling strength of detector
 const λ = 1.0

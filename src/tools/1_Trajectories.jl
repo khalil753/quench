@@ -24,6 +24,10 @@ struct AcceleratedTrajectory <: AbstractTrajectory
 end
 (X::AcceleratedTrajectory)(τ) = [X.χ0*sinh(τ/X.χ0), X.χ0*cosh(τ/X.χ0), X.y0, X.z0]
 
+get_γ(X::AbstractTrajectory) = τ -> ((X(τ + 1e-5) - X(τ - 1e-5))/2e-5)[1]
+get_γ(X::InertialTrajectory) = τ -> 1
+get_γ(X::QuenchTrajectory)   = τ -> 1/X.χ0
+
 lorentz_distance(X, X′) = (X[1] - X′[1])^2 - sum((X[2:end] - X′[2:end]).^2)
 
 function quench_distance(X, X′) 
