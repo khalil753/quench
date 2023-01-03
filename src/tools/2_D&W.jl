@@ -28,8 +28,9 @@ function _time_order(W::Function)
   return time_ordered_W
 end
 
-_Ws = Dict("quench" => _W_quench,
-           "flat"   => _W_flat_spacetime)
+_Ws = Dict("quench"  => _W_quench,
+           "flat"    => _W_flat_spacetime,
+           "rindler" => _W_flat_spacetime)
 _Ds = map_dict(_time_order, _Ws)
 
 struct DistributionWithTrajectories <: Function

@@ -1,6 +1,5 @@
 using HCubature, Plots, SpecialFunctions, ProgressBars
 include("params.jl")
-include("tools/2_D&W.jl")
 include("tools/3_LM_getters.jl")
 include("tools/SwitchingFuncs.jl")
 include("tools/DeformFuncs.jl")
@@ -13,10 +12,10 @@ function get_P_Minkowski()
     λ = 1.0
     d = 5*σ    
     df = deform_funcs["cos2"]
-    ε_contour = 3e-1
+    ε_contour = 1e-2
 
     initial_τs, final_τs =  [-d, -d], [d, d]
-    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000, rtol=int_tol)[1]
 
     X = InertialTrajectory(0.0, 0.0, 0.0)
     W = DistributionWithTrajectories(_Ws["flat"], X, X)
@@ -26,9 +25,7 @@ function get_P_Minkowski()
     P_Ms = []
     for (i, Ω) in enumerate(Ωs)
         println("\rDoing Ω number $i")
-        l = get_l(W, λ, Ω, χ)
-        l = complexify_l_or_m(l, ε_contour)
-        # l = complexify_l_or_m(l, df, distance_funcs["flat"], ε_contour)
+        l = get_l(W, λ, Ω, χ, ε_contour)
         P_M = integrate(l)
         push!(P_Ms, P_M)
     end
@@ -64,9 +61,7 @@ function get_M_vs_Ω_Minkowski()
     Ms = []
     for (i, Ω) in enumerate(Ωs)
         println("\rDoing Ω number $i: Ω = $Ω")
-        m = get_m(D, λ, Ω, χ)
-        # m = complexify_l_or_m(m, ε_contour)
-        m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
+        m = get_m(D, λ, Ω, χ, ε_contour)
         M = integrate(m)
         push!(Ms, M)
     end
@@ -86,9 +81,9 @@ function get_M_vs_L_Minkowski()
     """
     λ = 1 
     σ = 1
-    d = 5*σ    
-    df = deform_funcs["triangle"]
-    ε_contour = 5e-3
+    d = 5*σ   
+    Ω = 1.0 
+    ε_contour = 1e-2
 
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=500000 , rtol=int_tol)[1]
@@ -101,9 +96,7 @@ function get_M_vs_L_Minkowski()
         χ(τ) = switching_funcs["gauss"](τ/σ)
 
         println("\rDoing L number $i: L = $L")
-        m = get_m(D, λ, Ω, χ)
-        m = complexify_l_or_m(m, ε_contour)
-        # m = complexify_l_or_m(m, df, distance_funcs["flat"], ε_contour)
+        m = get_m(D, λ, Ω, χ, ε_contour)
         M = integrate(m)
         push!(Ms, M)
     end
@@ -112,27 +105,25 @@ function get_M_vs_L_Minkowski()
     p = plot(Ls, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
     display(p)
     savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
-    # return Ls, Ms, M.(Ls)
 end
 
 function plot_C_vs_L()
     λ = 1.0 
     σ = 1.0
     d = 5*σ    
-    ε_contour = 1e-1
+    Ω = 1
+    ε_contour = 1e-2
     χ(τ) = switching_funcs["gauss"](τ/σ)
 
     initial_τs, final_τs =  [-d, -d], [d, d]
-    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
-    Cplify(f) = complexify_l_or_m(f, ε_contour)
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
 
     separations = LinRange(σ/10, 7σ, 20)
     LABs = []
     for separation in separations
         XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(separation, 0.0, 0.0)
         Ws = initialize_Ws(_Ws["flat"], XA, XB)
-        ls = get_ls(Ws, λ, Ω, χ)
-        ls = map_dict(Cplify, ls) 
+        ls = get_ls(Ws, λ, Ω, χ, ε_contour)
         LAB = integrate(ls["AB"])
         push!(LABs, LAB)
     end
@@ -153,33 +144,33 @@ function get_concurrence()
 
     M_func(Ω, L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     P(Ω)         = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
-    C_func(Ω, L) = λ^2/4√π*σ/L*exp(-L^2/4σ^2)* (imag(exp(im*L*Ω) * erf(im*L/2σ + σ*Ω)) - sin(Ω*L))
+    C_func(Ω, L) = λ^2/4√π*σ/L*exp(-L^2/4σ^2) * (imag(exp(im*L*Ω) * erf(im*L/2σ + σ*Ω)) - sin(Ω*L))
 
     integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=50000 , rtol=int_tol)[1]
-    Cplify(f)    = complexify_l_or_m(f, ε_contour)
 
-    ΔLs = LinRange(0.5σ, 2σ, 8)
+    ΔLs = LinRange(0.5σ, 2σ, 4)
     # ΔLs = LinRange(0.5σ,  2σ, 10)
-    Ωs  = LinRange(-3/σ, 3/σ, 8)
+    Ωs  = LinRange(-3/σ, 3/σ, 4)
     Cs = zeros(length(Ωs), length(ΔLs))
     Cs_th = zeros(length(Ωs), length(ΔLs))
     for (i, Ω) in tqdm(enumerate(Ωs))
         for (j, ΔL) in tqdm(enumerate(ΔLs))
             XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(ΔL, 0.0, 0.0)
             D, Ws = DistributionWithTrajectories(_Ds["flat"], XA, XB), initialize_Ws(_Ws["flat"], XA, XB)
-            m, ls = get_m(D, λ, Ω, χ), get_ls(Ws, λ, Ω, χ)
-            m, ls = Cplify(m)        , map_dict(Cplify, ls) 
+            m, ls = get_m(D, λ, Ω, χ, ε_contour), get_ls(Ws, λ, Ω, χ, ε_contour)
             M, Ls = integrate(m)     , map_dict(integrate, ls)
 
-            ρ_th = [       1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
-                                  0                 P(Ω)    C_func(Ω, ΔL)               0;
-                                  0  conj(C_func(Ω, ΔL))             P(Ω)               0;
-                  conj(M_func(Ω, ΔL))                 0                0                0]
+            ρ_th = [         1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
+                                    0                 P(Ω)    C_func(Ω, ΔL)               0;
+                                    0  conj(C_func(Ω, ΔL))             P(Ω)               0;
+                    conj(M_func(Ω, ΔL))                 0                0                0]
 
-            ρ = [1 - Ls["AA"] - Ls["BB"]              0          0   conj(M);
-                                       0       Ls["AA"]   Ls["AB"]         0;
-                                       0  conj(Ls["AB"])  Ls["BB"]         0;
-                                       M              0          0         0]                                       
+    #                               0A0B      0A1B            1A0B      1A1B
+            ρ = [1 - Ls["AA"] - Ls["BB"]         0               0   conj(M); #0A0B
+                                       0  Ls["BB"]   conj(Ls["AB"])        0; #0A1B
+                                       0  Ls["AB"]        Ls["AA"]         0; #1A0B
+                                       M         0               0         0] #1A1B
+
                     
             Cs[i,j]    = concurrence(ρ)
             Cs_th[i,j] = concurrence(ρ_th)
