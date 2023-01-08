@@ -36,6 +36,11 @@ function get_ls(Ws, λ, Ω, χs, ε_contour)
        "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB], ε_contour))
 end
 
+function get_m_and_ls(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative, λ, Ω, χs, ε_contour)
+  Ws, D  = initialize_distributions(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative)
+  return get_m(D,λ, Ω, χs, ε_contour), get_ls(Ws, λ, Ω, χs, ε_contour)
+end 
+
 # function get_pole_distance(l_or_m, dist_func)
 #   local W
 #   try 
