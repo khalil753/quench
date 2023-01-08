@@ -1,8 +1,8 @@
+using StructEquality
 include("misc.jl")
 
 abstract type AbstractTrajectory <: Function end
-
-struct QuenchTrajectory <: AbstractTrajectory
+@def_structequal struct QuenchTrajectory <: AbstractTrajectory
   χ0::Fl
   y0::Fl
   b ::Fl
@@ -10,14 +10,14 @@ struct QuenchTrajectory <: AbstractTrajectory
 end
 (X::QuenchTrajectory)(τ) = real(τ) > 0 ? [τ/X.χ0, X.y0] : [τ, X.χ0]
 
-struct InertialTrajectory <: AbstractTrajectory
+@def_structequal struct InertialTrajectory <: AbstractTrajectory
     x0::Fl
     y0::Fl
     z0::Fl
 end
 (X::InertialTrajectory)(τ) = [τ, X.x0, X.y0, X.z0]
 
-struct AcceleratedTrajectory <: AbstractTrajectory
+@def_structequal struct AcceleratedTrajectory <: AbstractTrajectory
   χ0::Fl
   y0::Fl
   z0::Fl
@@ -42,5 +42,3 @@ end
 
 distance_funcs = Dict("flat"   => lorentz_distance,
                       "quench" => quench_distance)
-
-
