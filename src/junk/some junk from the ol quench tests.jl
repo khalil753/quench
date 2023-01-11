@@ -4,7 +4,7 @@ function plot_accelerated_l()
     In this test the two functions mostly coincide. The small difference in the curves I suspect 
     can be attributed to O(ε^2) corrections that birrel neglets when doing his manipulations
     """
-    X = AcceleratedTrajectory(1.0, 0.0, 0.0)
+    X = AcceleratedTrajectory(1.0, 0.0, 0.0, 0.0)
     _W = _Ws["flat"]
     W = DistributionWithTrajectories(_W, X, X)
 
@@ -25,7 +25,7 @@ function get_P_minkowski()
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)
 
-    X = AcceleratedTrajectory(1.0, 0.0, 0.0)
+    X = AcceleratedTrajectory(1.0, 0.0, 0.0, 0.0)
     _W = _Ws["flat"]
     W = DistributionWithTrajectories(_W, X, X)
 
