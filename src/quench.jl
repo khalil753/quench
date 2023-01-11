@@ -9,8 +9,8 @@ integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, int_tol)
 χs = initialize_switching_funcs(switching_func_name, σ, switching_function_center_A, switching_function_center_B)  
 
 ρs = []
-Cs, Ns, = zeros(length(Ωs), length(χ0Bs)), zeros(length(Ωs), length(χ0Bs))
-PAs, PBs = zeros(length(Ωs)), zeros(length(Ωs), length(χ0Bs))
+Cs , Ns, = zeros(nΩ, nχ), zeros(nΩ, nχ)
+PBs, PAs = zeros(nΩ, nχ), zeros(nΩ)
 run_duration = begin
 @elapsed for (i, Ω) in tqdm(enumerate(Ωs))
     for (j, χ0B) in tqdm(enumerate(χ0Bs))
@@ -22,7 +22,6 @@ run_duration = begin
         M, Ls = integrate(m)                 , map_dict(integrate, ls)
 
         ρ = get_ρ(M, Ls)
-        
         push!(ρs, ρ)
         Cs[i,j], Ns[i,j] = concurrence(ρ), negativity(ρ)
         PAs[i], PBs[i,j] = real(ρ[2,2]), real(ρ[3,3])
@@ -31,7 +30,7 @@ end
 end
 
 display(Cs)
-img_name = make_img(χ0Bs, Ωs, Cs)
+img_name = make_img(χ0Bs, Ωs, Cs/λ^2)
 store_in_df(params, img_name, run_duration)
 
 
