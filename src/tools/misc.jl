@@ -40,7 +40,7 @@ get_crossed_derivative(f, ε) = (x,y) -> 1/4ε^2*(f(x + ε, y + ε) -  f(x - ε,
 function initialize_trajs(space_time, χ0A, χ0B, b)
   if     space_time=="quench"  XA, XB = QuenchTrajectory(χ0A, b)   , QuenchTrajectory(χ0B, b)
   elseif space_time=="flat"    XA, XB = InertialTrajectory(0, 0, 0), InertialTrajectory(χ0B, 0, 0) 
-  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,0,0), AcceleratedTrajectory(χ0B,0,0) end
+  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,0,0,0), AcceleratedTrajectory(χ0B,0,0,0) end
   return XA, XB
 end
 
