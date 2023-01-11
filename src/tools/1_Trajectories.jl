@@ -19,10 +19,11 @@ end
 
 @def_structequal struct AcceleratedTrajectory <: AbstractTrajectory
   χ0::Fl
+  x0::Fl
   y0::Fl
   z0::Fl
 end
-(X::AcceleratedTrajectory)(τ) = [X.χ0*sinh(τ/X.χ0), X.χ0*cosh(τ/X.χ0), X.y0, X.z0]
+(X::AcceleratedTrajectory)(τ) = [X.χ0*sinh(τ/X.χ0), X.χ0*cosh(τ/X.χ0) + X.x0 - X.χ0, X.y0, X.z0]
 
 get_γ(X::AbstractTrajectory) = τ -> ((X(τ + 1e-5) - X(τ - 1e-5))/2e-5)[1]
 get_γ(X::InertialTrajectory) = τ -> 1
