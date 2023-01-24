@@ -23,7 +23,7 @@ function get_P_minkowski()
     d = 20*ε_W
 
     initial_τs, final_τs =  [-d, -d], [d, d]
-    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=rtol)
 
     X = AcceleratedTrajectory(1.0, 0.0, 0.0, 0.0)
     _W = _Ws["flat"]
@@ -55,7 +55,7 @@ function get_M_Minkowski()
     L = 1.0
 
     initial_τs, final_τs =  [-d, -d], [d, d]
-    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=int_tol)[1]
+    integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=rtol)[1]
 
     XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
     D = DistributionWithTrajectories(_Ds["flat"], XA, XB)

@@ -9,7 +9,7 @@ include("../tools/DeformFuncs.jl")
 
 Wττ′s, Dττ′, χ, df, dist_func = initialize_stuff()
 
-integrate(f) = hcubature(f, [-3σ, -3σ], [3σ, 3σ], maxevals=50000, rtol=int_tol)[1]
+integrate(f) = hcubature(f, [-3σ, -3σ], [3σ, 3σ], maxevals=50000, rtol=rtol)[1]
 Cplify(l_or_m) = complexify_l_or_m(l_or_m, df, dist_func, ε_contour) # I'm writing this to shorten the name and to be able to use map_dict that requires a functions with a single argument
 # Cplify(l_or_m) = complexify_l_or_m(l_or_m, ε_contour) # I'm writing this to shorten the name and to be able to use map_dict that requires a functions with a single argument
 rotate(f) = τs -> f([τs[1]+τs[2], τs[2]-τs[1]])

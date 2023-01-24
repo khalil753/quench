@@ -1,7 +1,7 @@
 using HCubature, Plots, SpecialFunctions, ProgressBars
-include("params.jl")
-include("tools/SwitchingFuncs.jl")
-include("tools/2_D&W.jl")
+include("../params.jl")
+include("../tools/SwitchingFuncs.jl")
+include("../tools/2_D&W.jl")
 
 struct _W <: Function 
     ε::Float64
@@ -26,7 +26,7 @@ for L in Ls
     m(t, t′) = χ(t)*χ(t′) * exp(-im*(t+t′)) * (W([t-im*ε,0],[t′, L])*θ(t-t′) + W([t′, L], [t-im*ε,0])*θ(t′-t)) 
     # m(t, t′) = χ(t)*χ(t′) * exp(-im*(t+t′)) * (W(t,t′)*θ(t-t′) + W(t′,t)*θ(t′-t)) 
     m(ts) = m(ts...)
-    M_num = hcubature(m, [-5,-5], [5,5], maxevals=70000, rtol=int_tol)[1]
+    M_num = hcubature(m, [-5,-5], [5,5], maxevals=70000, rtol=rtol)[1]
     push!(Ms, M_num)
 end
 
