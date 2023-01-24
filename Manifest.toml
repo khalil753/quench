@@ -2,7 +2,7 @@
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "1f35b40bfd5ffe23aa7b7a23d17d84fee5d23625"
+project_hash = "a2fe1cbc9cb8fe16009b4f72a889cefd4e10c8ff"
 
 [[deps.AMD]]
 deps = ["Libdl", "LinearAlgebra", "SparseArrays", "Test"]
@@ -1119,9 +1119,9 @@ version = "5.15.3+2"
 
 [[deps.QuadGK]]
 deps = ["DataStructures", "LinearAlgebra"]
-git-tree-sha1 = "78aadffb3efd2155af139781b8a8df1ef279ea39"
+git-tree-sha1 = "de191bc385072cc6c7ed3ffdc1caeed3f22c74d4"
 uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
-version = "2.4.2"
+version = "2.7.0"
 
 [[deps.QuantumInformation]]
 deps = ["Convex", "DocStringExtensions", "LinearAlgebra", "MatrixEnsembles", "Pkg", "Random", "SCS", "StatsBase", "TensorCast", "TensorOperations"]

@@ -1,7 +1,7 @@
 using DataFrames
 
 # WightmanFunction params
-const space_time = "rindler"
+const space_time = "quench"
 
 if     space_time == "quench"  const with_derivative_coupling = true
 elseif space_time == "rindler" const with_derivative_coupling = true 
@@ -17,9 +17,9 @@ const switching_function_center_B = 0.5σ
 const b = 0.01
 
 # Detector frequencies and Initial positions
-nΩ = 20 # Number of frquencies/initial conditions to iterate over
-nχ = 20
-const χ0A = 50σ 
+nΩ = 4 # Number of frquencies/initial conditions to iterate over
+nχ = 8
+const χ0A = 1σ 
 if χ0A == 0 println("χ0A is zero and that will create problems with rindler and quench"); throw(Exception) end
 if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = -1/σ, 30/σ, χ0A + 0.5σ, χ0A + 1.5σ
 elseif space_time == "flat"                 Ω0, Ωf, χ0B0, χ0Bf =  5/σ, 20/σ,       0.5σ,         2σ end
@@ -39,7 +39,7 @@ if space_time=="quench"  const initial_τs, final_τs = [max(σ*1e-2, switching_
 else                     const initial_τs, final_τs = [switching_function_center_A - Δτ, switching_function_center_B - Δτ],
                                                       [switching_function_center_A + Δτ, switching_function_center_B + Δτ]
 end
-const int_tol = 1e-4
+const rtol = 1e-4
 const maxevals = 500000
 
 # Complex contour params
@@ -63,6 +63,6 @@ params = DataFrame("Space_Time"           => [space_time],
                    "Numeric_Derivative_ε" => [ε_numeric_derivative],
                    "initial_τs"           => [initial_τs],
                    "final_τs"             => [final_τs],
-                   "int_tol"              => [int_tol],
+                   "rtol"              => [rtol],
                    "maxevals"             => [maxevals],
                    "Contour_ε"            => [ε_contour])
