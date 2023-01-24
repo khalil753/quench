@@ -1,5 +1,5 @@
 # Abbreviations
-using ForwardDiff
+using ForwardDiff, CairoMakie
 
 Fl, Vec, C = Float64, Vector, ComplexF64
 VecCFl = Union{Vector{C}, Vector{Fl}}
@@ -18,6 +18,7 @@ map_dict(f::Function, d::Dict)::Dict = Dict([(k, f(v)) for (k, v) in d])
 
 function function_names()
   func_names = names(Main)
+  filter!(name -> name != :run_duration, func_names)
   filter!(name -> isa(eval(name),Function), func_names)
   return func_names
 end
@@ -27,7 +28,7 @@ function make_Ws_dict()
   _Ws = Dict()
   for name in func_names
     name_str = String(name)
-    if length(name_str) < 3 continue end
+    if length(name_str) < 3 || name_str=="run_duration" continue end
     if name_str[1:3] != "_W_" continue end
     spacetime = split(name_str, "_")[3]
     _Ws[spacetime] = eval(name)
@@ -66,18 +67,24 @@ function initialize_distributions(space_time::String, χ0A::Fl, χ0B::Fl, b::Fl,
   return Ws, D
 end
 
-function memoized_integrate(l_or_m, Ms_Lss, initial_τs, final_τs, maxevals, int_tol)
+function memoized_integrate(l_or_m, Ms_Lss, initial_τs, final_τs, maxevals, rtol)
   if l_or_m in keys(Ms_Lss) return Ms_Lss[l_or_m] end
-  Ms_Lss[l_or_m] = hcubature(l_or_m, initial_τs, final_τs, maxevals=maxevals, rtol=int_tol)[1]
+  Ms_Lss[l_or_m] = hcubature(l_or_m, initial_τs, final_τs, maxevals=maxevals, rtol=rtol)[1]
+  # Ms_Lss[l_or_m] = quad_integrate(l_or_m, initial_τs, final_τs, rtol)
   return Ms_Lss[l_or_m]
 end
 
-function get_ρ(M, Ls) 
-  #                         00        01              10        11
-  ρ = [1 - Ls["AA"] - Ls["BB"]         0               0   conj(M); #00
-                             0  Ls["BB"]   conj(Ls["AB"])        0; #01
-                             0  Ls["AB"]        Ls["AA"]         0; #10
-                             M         0               0         0] #11
+function quad_integrate(f, t0s, tfs, rtol)
+  f1(x) = quadgk(y -> f([x, y]), t0s[2], tfs[2], rtol=rtol)[1]
+  return quadgk(f1, t0s[1], tfs[1], rtol=rtol)[1]
+end
+
+function get_ρ(M, Ls)
+   #                         00        01              10        11
+  ρ = [1 - Ls["AA"] - Ls["BB"]                  0                        0   conj(M); #00
+                             0            Ls["BB"]  conj(get(Ls, "AB", NaN))       0; #01
+                             0  get(Ls, "AB", NaN)                 Ls["AA"]        0; #10
+                             M                  0                        0         0] #11
 
   if imag(ρ[2,2]) >   1e-5 println("the imaginary part of PB is quite big so there could be a numerical problem: PB = $(ρ[2,2])") end  
   if imag(ρ[3,3]) >   1e-5 println("the imaginary part of PA is quite big so there could be a numerical problem: PB = $(ρ[3,3])") end  
@@ -100,18 +107,39 @@ function concurrence(ρ)
   2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end
 
-function make_img(χ0Bs, Ωs, Cs)
-  p = contourf(χ0Bs, Ωs, Cs, linewidth=-0.0, xlabel="χB₀", ylabel="Ω", title="Concurrence")
-  display(p)
+function make_img(χ0Bs, Ωs, Cs, path)
+  f, ax, l = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0, xlabel="χB₀", ylabel="Ω", title="Concurrence")
+  ax.xlabel = "χB₀"; ax.ylabel = "Ω"; ax.title = "Concurrence"
+  display(ax)
+  display(f)
   img_name = replace("$(now())", ":"=>"_")
-  savefig(p, "plots/new_plots/$(img_name).png")
+  save("$path/$(img_name).pdf", f)
   return img_name
 end
 
-function store_in_df(params, img_name, run_duration)
-  new_row = insertcols!(params, 1, "Image_Name"   => [img_name],
-                                   "Run_Duration" => [Int(round(run_duration/60))])
-  println(new_row)
-  append = "df.csv" in readdir("plots")
-  CSV.write("plots/df.csv", new_row, append=append)
+function plot_C_vs_L(path, ΔLs, Ωs, Cs)
+  img_names = []
+  for Ω in Ωs
+    f, ax, l = lines(ΔLss[Ω], vec(Cs/λ^2), fontsize = 12)
+    ylims!(ax, C_ranges[Ω])
+    ax.title = "Ω = $Ω"
+    ax.titlesize = 25
+    display(f)
+    img_name = replace("$(now())", ":"=>"_")
+    save("$path/$(img_name).pdf", f, pt_per_unit = 1)
+    push!(img_names, img_name)
+  end
+  return img_names
+end
+
+function store_in_df(path, file_name, params, img_names, run_duration)
+  for img_name in img_names
+    if hasproperty(params, :Image_Name) params[!,"Image_Name"] = img_name
+    else
+      new_row = insertcols!(params, 1, "Image_Name"   => [img_name],
+                                        "Run_Duration" => [Int(round(run_duration/60))])
+    end
+    append = file_name in readdir(path)
+    CSV.write("$path/$file_name", new_row, append=append)
+  end
 end

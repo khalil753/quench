@@ -32,8 +32,9 @@ end
 function get_ls(Ws, λ, Ω, χs, ε_contour) 
   χA, χB = isa(χs, Vector) ? χs : (χs, χs)
   Dict("AA" => get_l(Ws["AA"], λ, Ω, [χA, χA], ε_contour),
-       "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB], ε_contour),
-       "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB], ε_contour))
+       "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB], ε_contour)
+      #  "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB], ε_contour)
+       )
 end
 
 function get_m_and_ls(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative, λ, Ω, χs, ε_contour)

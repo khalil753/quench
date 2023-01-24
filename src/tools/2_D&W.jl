@@ -3,7 +3,7 @@ include("1_Trajectories.jl")
 W₀(z::C , z′::C ) = - 1/4π*(log((cosh((z + z′))/2)*sinh(   (z - z′)/2))) 
 W₀(z    , z′    ) = - 1/4π*(log((cosh((z + z′))/2)*sinh(abs(z - z′)/2))) - im/8*sign(z - z′)
 
-function _W_quench(X, X′)
+function _W_quench(X, X′)::C 
   if is_after_quench(X) && is_after_quench(X′) 
     (η,y), (η′,y′) = X, X′
     return W₀(η - y, η′ - y′) + W₀(η + y, η′ + y′)
