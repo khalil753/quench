@@ -1,15 +1,15 @@
-using HCubature, Plots, ProgressBars, Dates, CSV
+using QuadGK, HCubature, ProgressBars, Dates, CSV, CairoMakie
 include("params.jl")
 include("tools/3_LM_getters.jl")
 include("tools/SwitchingFuncs.jl")
 include("tools/Memoized_Integrator.jl")
 
-integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, int_tol)
+integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
 
 χs = initialize_switching_funcs(switching_func_name, σ, switching_function_center_A, switching_function_center_B)  
 
 ρs = []
-Cs , Ns, = zeros(nΩ, nχ), zeros(nΩ, nχ)
+Cs , Ns  = zeros(nΩ, nχ), zeros(nΩ, nχ)
 PBs, PAs = zeros(nΩ, nχ), zeros(nΩ)
 run_duration = begin
 @elapsed for (i, Ω) in tqdm(enumerate(Ωs))
@@ -29,9 +29,9 @@ run_duration = begin
 end
 end
 
-display(Cs)
-img_name = make_img(χ0Bs, Ωs, Cs/λ^2)
-store_in_df(params, img_name, run_duration)
+path = "new_plots/quench/"
+img_name = make_img(χ0Bs, Ωs, Cs/λ^2, path)
+store_in_df(path, "df.csv", params, img_name, run_duration)
 
 
 
