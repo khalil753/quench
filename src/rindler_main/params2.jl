@@ -37,10 +37,10 @@ const ε_numeric_derivative = 5e-4
 const initial_τs, final_τs = [switching_function_center_A - Δτ, switching_function_center_B - Δτ],
                              [switching_function_center_A + Δτ, switching_function_center_B + Δτ]
 const rtol = 1e-4
-const maxevals = 500000
+const maxevals = 5000000
 
 # Complex contour params
-const ε_contour = 1e-3
+const ε_contour = 1e-6
 
 const gamma_func = "1"
 if gamma_func == "1"

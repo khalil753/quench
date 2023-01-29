@@ -23,18 +23,17 @@ run_duration = begin
     end
     P = hcubature(p1, [0.001], [5σ], maxevals=maxevals, rtol=rtol)[1] + 
     λ^2/4π*(exp(-Ω^2*σ^2) - √π*Ω*σ*erfc(Ω*σ))
-
     ΔLs = ΔLss[Ω]
     for (j, ΔL) in tqdm(enumerate(ΔLs))
         function D_parallel(x,y) 
-            a/32π^2(((a*ΔL/2 - exp(-x*a/2)*sinh(y*a/2))*(a*ΔL/2 + exp(x*a/2)*sinh(y*a/2)) - im*1e-1)^(-1) + 
-                    ((a*ΔL/2 + exp(-x*a/2)*sinh(y*a/2))*(a*ΔL/2 - exp(x*a/2)*sinh(y*a/2)) - im*1e-1)^(-1)) 
+            a/32π^2(((a*ΔL/2 - exp(-x*a/2)*sinh(y*a/2))*(a*ΔL/2 + exp(x*a/2)*sinh(y*a/2)) - im*ε_contour)^(-1) + 
+                    ((a*ΔL/2 + exp(-x*a/2)*sinh(y*a/2))*(a*ΔL/2 - exp(x*a/2)*sinh(y*a/2)) - im*ε_contour)^(-1)) 
         end        
         function F(xs)
             x,y = xs
             exp(-(x^2 + y^2)/4σ^2 - im*x*Ω)*D_parallel(x,y)    
         end
-        ρ14 = -λ^2 * hcubature(F, [0.01, -5σ], [5σ, 5σ], maxevals=maxevals, rtol=rtol)[1]
+        ρ14 = -λ^2 * hcubature(F, [-5σ, 0.0], [5σ, 5σ], maxevals=maxevals, rtol=rtol)[1]
         println("ρ14 = $ρ14")
         ρ = get_ρ(ρ14, Dict("AA" => P, "BB" => P))
         Cs[i,j], Ns[i,j] = concurrence(ρ), negativity(ρ)
@@ -43,7 +42,7 @@ end
 end
 
 path = "new_plots/rindler_plots"
-img_names = plot_C_vs_L(path, ΔLss, Ωs, Cs')
+img_names = plot_C_vs_L(path, ΔLss, Ωs, Cs', false)
 # store_in_df(path, "df.csv", params, img_names, run_duration)
 
 
