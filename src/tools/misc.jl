@@ -117,16 +117,16 @@ function make_img(χ0Bs, Ωs, Cs, path)
   return img_name
 end
 
-function plot_C_vs_L(path, ΔLs, Ωs, Cs)
+function plot_C_vs_L(path, ΔLs, Ωs, Cs, save_img=true)
   img_names = []
   for Ω in Ωs
-    f, ax, l = lines(ΔLss[Ω], vec(Cs/λ^2), fontsize = 12)
-    ylims!(ax, C_ranges[Ω])
+    f, ax, l = CairoMakie.lines(ΔLss[Ω], vec(Cs/λ^2), fontsize = 12)
+    CairoMakie.ylims!(ax, C_ranges[Ω])
     ax.title = "Ω = $Ω"
     ax.titlesize = 25
     display(f)
     img_name = replace("$(now())", ":"=>"_")
-    save("$path/$(img_name).pdf", f, pt_per_unit = 1)
+    if save_img CairoMakie.save("$path/$(img_name).pdf", f, pt_per_unit = 1) end
     push!(img_names, img_name)
   end
   return img_names

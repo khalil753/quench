@@ -23,5 +23,4 @@
 #     return complexify(f, deformation_function, pole_distance, ε, get_∇Δτ)
 # end
 
-# complexify(f, ε) = τs -> f([τs[1] - im*ε, τs[2] + im*ε])
 complexify(f, ε) = (τ1,τ2) -> f(τ1 - im*ε, τ2 + im*ε)
