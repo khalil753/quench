@@ -1,4 +1,4 @@
-using HCubature, Plots, SpecialFunctions, ProgressBars
+using HCubature, CairoMakie, SpecialFunctions, ProgressBars, Plots
 include("../params.jl")
 include("../tools/3_LM_getters.jl")
 include("../tools/SwitchingFuncs.jl")
@@ -35,7 +35,7 @@ function get_P_Minkowski()
 
     P(Ω) = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
 
-    p = plot(Ωs, [P.(Ωs), real.(P_Ms), imag.(P_Ms)], labels=["Theoretical" "Real part of numerical" "Imaginary part of numerical"])
+    p = Plots.plot(Ωs, [P.(Ωs), real.(P_Ms), imag.(P_Ms)], labels=["Theoretical" "Real part of numerical" "Imaginary part of numerical"])
     display(p)
     savefig(p, raw"plots\P_vs_Ω_Minkowski.png")
 end
@@ -103,7 +103,7 @@ function get_M_vs_L_Minkowski()
     end
 
     M(L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
-    p = plot(Ls, [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
+    p = Plots.plot(Vec(Ls), [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
     display(p)
     savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
 end
@@ -198,10 +198,10 @@ function plot_inertial_m()
     display(plot(ts, [abs ∘ _m, abs ∘ _m_th]))#, ylims=[-4,4]))
 end
 
-# get_P_Minkowski();
+get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
 # get_M_vs_L_Minkowski();
-Cs, Cs_th = get_concurrence();
+# Cs, Cs_th = get_concurrence();
 # plot_C_vs_L()
 # plot_inertial_l();
 # plot_inertial_m();
