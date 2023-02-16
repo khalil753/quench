@@ -3,7 +3,7 @@ include("1_Trajectories.jl")
 W₀(z::C , z′::C ) = - 1/4π*(log((cosh((z + z′))/2)*sinh(   (z - z′)/2))) 
 W₀(z    , z′    ) = - 1/4π*(log((cosh((z + z′))/2)*sinh(abs(z - z′)/2))) - im/8*sign(z - z′)
 
-function _W_quench(X, X′)::C 
+function _W_quench(X, X′) 
   if is_after_quench(X) && is_after_quench(X′) 
     (η,y), (η′,y′) = X, X′
     return W₀(η - y, η′ - y′) + W₀(η + y, η′ + y′)
@@ -21,7 +21,15 @@ function _W_flat(X, X′)
   -1/(4*π^2*(Δt^2 - sum(Δx.^2)))
 end
 
+function _W_flat_with_epsilon(X, X′)
+  Δt, Δx = X[1] - X′[1], X[2:end] - X′[2:end]
+  iε = im*1e-3
+  -1/(4*π^2*((Δt - iε)^2 - sum(Δx.^2)))
+end
+
 _W_rindler = _W_flat
+
+# function _W_rindler_new()
 
 function _time_order(W::Function)
   """This function creates a new time_ordered_W which is time oredered (duh)"""
