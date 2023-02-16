@@ -198,6 +198,31 @@ function plot_inertial_m()
     display(plot(ts, [abs ∘ _m, abs ∘ _m_th]))#, ylims=[-4,4]))
 end
 
+function accelerated_detector_tests()
+    integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
+    χs = initialize_switching_funcs(switching_func_name, σ, switching_function_center_A, switching_function_center_B)  
+    
+    ρs = []
+    Cs  ,Ns   = zeros(nΩ, nχ), zeros(nΩ, nχ)
+    PBs ,PAs  = zeros(nΩ, nχ), zeros(nΩ)
+    for (i, Ω) in tqdm(enumerate(Ωs))
+        ΔLs = ΔLss[Ω]
+        for (j, ΔL) in tqdm(enumerate(ΔLs))
+            XA, XB = AcceleratedTrajectory(χ0, 0, 0, 0), AcceleratedTrajectory(χ0, ΔL, 0, 0)
+            Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
+            if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
+    
+            m, ls = get_m(D, λ, Ω, χs, ε_contour), get_ls(Ws, λ, Ω, χs, ε_contour)
+            M, Ls = integrate(m)                 , map_dict(integrate, ls)
+    
+            ρ = get_ρ(M, Ls)
+            push!(ρs, ρ)
+            Cs[i,j], Ns[i,j]  = concurrence(ρ), negativity(ρ)
+            PAs[i] , PBs[i,j] = real(ρ[2,2])  , real(ρ[3,3])
+        end
+    end
+end
+
 get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
 # get_M_vs_L_Minkowski();
