@@ -30,7 +30,7 @@ function make_Ws_dict()
     name_str = String(name)
     if length(name_str) < 3 || name_str=="run_duration" continue end
     if name_str[1:3] != "_W_" continue end
-    spacetime = split(name_str, "_")[3]
+    spacetime = join(split(name_str, "_")[3:end], "_")
     _Ws[spacetime] = eval(name)
   end
   return _Ws
@@ -40,8 +40,8 @@ get_crossed_derivative(f, ε) = (x,y) -> 1/4ε^2*(f(x + ε, y + ε) -  f(x - ε,
 
 function initialize_trajs(space_time, χ0A, χ0B, b)
   if     space_time=="quench"  XA, XB = QuenchTrajectory(χ0A, b)   , QuenchTrajectory(χ0B, b)
-  elseif space_time=="flat"    XA, XB = InertialTrajectory(0, 0, 0), InertialTrajectory(χ0B, 0, 0) 
-  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,0,0,0), AcceleratedTrajectory(χ0B,0,0,0) end
+  elseif space_time=="flat"    XA, XB = InertialTrajectory(χ0A, 0, 0), InertialTrajectory(χ0B, 0, 0) 
+  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,χ0A,0,0), AcceleratedTrajectory(χ0B,χ0B,0,0) end
   return XA, XB
 end
 
@@ -107,25 +107,25 @@ function concurrence(ρ)
   2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end
 
-function make_img(χ0Bs, Ωs, Cs, path)
-  f, ax, l = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0, xlabel="χB₀", ylabel="Ω", title="Concurrence")
+function make_img(χ0Bs, Ωs, Cs, path, experiment_name)
+  f, ax, hm = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0)
   ax.xlabel = "χB₀"; ax.ylabel = "Ω"; ax.title = "Concurrence"
-  display(ax)
+  Colorbar(f[:, end+1], hm)
   display(f)
-  img_name = replace("$(now())", ":"=>"_")
+  img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
   save("$path/$(img_name).pdf", f)
   return img_name
 end
 
-function plot_C_vs_L(path, ΔLs, Ωs, Cs, save_img=true)
+function plot_C_vs_L(path, experiment_name, ΔLss, Ωs, Cs, save_img=true)
   img_names = []
   for Ω in Ωs
-    f, ax, l = CairoMakie.lines(ΔLss[Ω], vec(Cs/λ^2), fontsize = 12)
+    f, ax, l = CairoMakie.lines(ΔLss[Ω], vec(Cs[Ω]/λ^2), fontsize = 12)
     CairoMakie.ylims!(ax, C_ranges[Ω])
     ax.title = "Ω = $Ω"
     ax.titlesize = 25
     display(f)
-    img_name = replace("$(now())", ":"=>"_")
+    img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
     if save_img CairoMakie.save("$path/$(img_name).pdf", f, pt_per_unit = 1) end
     push!(img_names, img_name)
   end
@@ -133,13 +133,14 @@ function plot_C_vs_L(path, ΔLs, Ωs, Cs, save_img=true)
 end
 
 function store_in_df(path, file_name, params, img_names, run_duration)
-  for img_name in img_names
-    if hasproperty(params, :Image_Name) params[!,"Image_Name"] = img_name
-    else
-      new_row = insertcols!(params, 1, "Image_Name"   => [img_name],
-                                        "Run_Duration" => [Int(round(run_duration/60))])
-    end
-    append = file_name in readdir(path)
-    CSV.write("$path/$file_name", new_row, append=append)
+  if hasproperty(params, :Image_Name) params[:,"Image_Name"] = img_names
+  else
+    insertcols!(params, 1, "Image_Name"    => img_names,
+                            "Run_Duration" => Int.(round.(run_duration./60)))
   end
+  append = file_name in readdir(path)
+  CSV.write("$path/$file_name", params, append=append)
+  df = CSV.read( "$path/$file_name", DataFrame)
+  sort!(df, [:Image_Name])
+  CSV.write("$path/$file_name", df)
 end
