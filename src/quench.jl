@@ -30,8 +30,10 @@ end
 end
 
 path = "new_plots/quench/"
-img_name = make_img(χ0Bs, Ωs, Cs/λ^2, path)
-store_in_df(path, "df.csv", params, img_name, run_duration)
+img_name = make_img(χ0Bs, Ωs, Cs/λ^2, path, experiment_name)
+println(img_name)
+save("new_plots/quench/$(img_name).jld", "data", Cs)
+store_in_df(path, "df.csv", params, [img_name], [run_duration])
 
 
 
