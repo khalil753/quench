@@ -27,11 +27,9 @@ end
 (X::AcceleratedTrajectory)(τ) = [X.χ0*sinh(τ/abs(X.χ0)), X.χ0*cosh(τ/abs(X.χ0)) + X.x0 - X.χ0, X.y0, X.z0]
 
 get_γ(X::AbstractTrajectory)    = (println("You haven't created the gamma function for this trajectory"), throw(Exception))
-get_γ(X::InertialTrajectory)    = τ -> 1
-get_γ(X::QuenchTrajectory)      = τ -> 1/X.χ0
-# get_γ(X::QuenchTrajectory)      = τ -> cosh(τ/X.χ0)
-# get_γ(X::AcceleratedTrajectory) = τ -> cosh(τ/X.χ0)
-# get_γ(X::AcceleratedTrajectory) = τ -> 1
+# get_γ(X::InertialTrajectory)    = τ -> 1
+# get_γ(X::QuenchTrajectory)      = τ -> 1/X.χ0
+# get_γ(X::AcceleratedTrajectory) = τ -> 1/X.χ0
 
 lorentz_distance(X, X′) = (X[1] - X′[1])^2 - sum((X[2:end] - X′[2:end]).^2)
 
