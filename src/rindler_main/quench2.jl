@@ -7,13 +7,12 @@ include("../tools/Memoized_Integrator.jl")
 integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
 χs = initialize_switching_funcs(switching_func_name, σ, switching_function_center_A, switching_function_center_B)  
 
-ρs = []
-Cs  ,Ns   = zeros(nΩ, nχ), zeros(nΩ, nχ)
-PBs ,PAs  = zeros(nΩ, nχ), zeros(nΩ)
-run_duration = begin
-@elapsed for (i, Ω) in tqdm(enumerate(Ωs))
+ρs, run_durations, Cs = [], [], Dict()
+for (i, Ω) in tqdm(enumerate(Ωs))
     ΔLs = ΔLss[Ω]
-    for (j, ΔL) in tqdm(enumerate(ΔLs))
+    Cs[Ω] = []
+    run_duration = begin
+    @elapsed  for (j, ΔL) in tqdm(enumerate(ΔLs))
         XA, XB = AcceleratedTrajectory(χ0, 0, 0, 0), AcceleratedTrajectory(χ0, ΔL, 0, 0)
         Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
         if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
@@ -23,12 +22,12 @@ run_duration = begin
 
         ρ = get_ρ(M, Ls)
         push!(ρs, ρ)
-        Cs[i,j], Ns[i,j]  = concurrence(ρ), negativity(ρ)
-        PAs[i] , PBs[i,j] = real(ρ[2,2])  , real(ρ[3,3])
+        push!(Cs[Ω], concurrence(ρ))
     end
-end
+    end
+    push!(run_durations, run_duration)
 end
 
 path = "new_plots/rindler_plots"
-img_names = plot_C_vs_L(path, ΔLss, Ωs, Cs')
-store_in_df(path, "df.csv", params, img_names, run_duration)
+img_names = plot_C_vs_L(path, experiment_name, ΔLss, Ωs, Cs)
+store_in_df(path, "df.csv", params, img_names, run_durations)
