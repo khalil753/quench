@@ -1,9 +1,9 @@
 using DataFrames
 
-const experiment_name = "large_chi_limit"
+const experiment_name = "epsilon_dependence"
 
 # WightmanFunction params
-const space_time = "flat"
+const space_time = "quench"
 
 if     space_time == "quench"  const with_derivative_coupling = true
 elseif space_time == "rindler" const with_derivative_coupling = true 
@@ -12,16 +12,16 @@ elseif space_time == "flat"    const with_derivative_coupling = true end
 # Switching function params
 const switching_func_name = "cos4"
 const σ = 1.0
-const switching_function_center_A = 0.6σ
-const switching_function_center_B = 0.6σ
+const switching_function_center_A = 0.65σ
+const switching_function_center_B = 0.65σ
 
 # Quench regulator
 const b = 1e-1
 
 # Detector frequencies and Initial positions
-nΩ = 15 # Number of frquencies/initial conditions to iterate over
-nχ = 15
-const χ0A = 20σ 
+nΩ = 10 # Number of frquencies/initial conditions to iterate over
+nχ = 10
+const χ0A = 1σ 
 if χ0A == 0 println("χ0A is zero and that will create problems with rindler and quench"); throw(Exception) end
 if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = -1/σ, 30/σ, χ0A + 0.5σ, χ0A + 1.5σ
 elseif space_time == "flat"                 Ω0, Ωf, χ0B0, χ0Bf =  5/σ, 20/σ,       0.5σ,         2σ end
@@ -43,10 +43,10 @@ else                     const initial_τs, final_τs = [switching_function_cent
                                                       [switching_function_center_A + Δτ, switching_function_center_B + Δτ]
 end
 const rtol = 1e-4
-const maxevals = 1000000
+const maxevals = 5000000
 
 # Complex contour params
-const ε_contour = 1e-2
+const ε_contour = 1e-3
 
 params = DataFrame("Space_Time"           => [space_time],
                    "Derivative_Coupling"  => [with_derivative_coupling],

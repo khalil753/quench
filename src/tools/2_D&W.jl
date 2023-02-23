@@ -29,8 +29,6 @@ end
 
 _W_rindler = _W_flat
 
-# function _W_rindler_new()
-
 function _time_order(W::Function)
   """This function creates a new time_ordered_W which is time oredered (duh)"""
   time_ordered_W(X, X′) = real(X[1]) > real(X′[1]) ? W(X,X′) : W(conj(X′),conj(X)) 
