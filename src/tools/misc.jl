@@ -132,14 +132,16 @@ function plot_C_vs_L(path, experiment_name, ΔLss, Ωs, Cs, save_img=true)
   return img_names
 end
 
-function store_in_df(path, file_name, params, img_names, run_duration)
-  if hasproperty(params, :Image_Name) params[:,"Image_Name"] = img_names
-  else
-    insertcols!(params, 1, "Image_Name"    => img_names,
-                            "Run_Duration" => Int.(round.(run_duration./60)))
+function store_in_df(path, file_name, params, img_names, run_durations)
+  for (img_name, run_duration) in zip(img_names, run_durations)
+    if hasproperty(params, :Image_Name) params[:,"Image_Name"] = [img_name]
+    else
+      insertcols!(params, 1, "Image_Name"   => [img_name],
+                             "Run_Duration" => [Int.(round.(run_duration./60))])
+    end
+    append = file_name in readdir(path)
+    CSV.write("$path/$file_name", params, append=append)
   end
-  append = file_name in readdir(path)
-  CSV.write("$path/$file_name", params, append=append)
   df = CSV.read( "$path/$file_name", DataFrame)
   sort!(df, [:Image_Name])
   CSV.write("$path/$file_name", df)
