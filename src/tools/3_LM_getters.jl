@@ -17,23 +17,23 @@ end
 
 function get_l(W, λ, Ω, χs, ε_contour)
   χD , χD′ = isa(χs, Vector) ? χs : (χs, χs)
-  γD′, γD  = get_γ.(get_Xs(W))
+  # γD′, γD  = get_γ.(get_Xs(W))
   W = complexify(W, ε_contour)
-  l(τs) =  λ^2*χD(τs[1])*χD′(τs[2]) * W(τs[2], τs[1])*exp(im*Ω*(τs[1] - τs[2])) * γD(τs[1])*γD′(τs[2])
+  l(τs) =  λ^2*χD(τs[1])*χD′(τs[2]) * W(τs[2], τs[1])*exp(im*Ω*(τs[1] - τs[2])) #* γD(τs[1])*γD′(τs[2])
 end
 
 function get_m(D, λ, Ω, χs, ε_contour)
   χA, χB = isa(χs, Vector) ? χs : (χs, χs)
-  γA, γB = get_γ.(get_Xs(D))
+  # γA, γB = get_γ.(get_Xs(D))
   D = complexify(D, ε_contour)
-  m(τs) = -λ^2*χA(τs[1])*χB(τs[2]) * D(τs[1], τs[2])*exp(im*Ω*(τs[1] + τs[2])) * γA(τs[1])*γB(τs[2])
+  m(τs) = -λ^2*χA(τs[1])*χB(τs[2]) * D(τs[1], τs[2])*exp(im*Ω*(τs[1] + τs[2])) #* γA(τs[1])*γB(τs[2])
 end 
 
 function get_ls(Ws, λ, Ω, χs, ε_contour) 
   χA, χB = isa(χs, Vector) ? χs : (χs, χs)
   Dict("AA" => get_l(Ws["AA"], λ, Ω, [χA, χA], ε_contour),
-       "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB], ε_contour)
-      #  "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB], ε_contour)
+       "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB], ε_contour),
+       "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB], ε_contour)
        )
 end
 
