@@ -18,6 +18,7 @@ for (i, Ω) in tqdm(enumerate(Ωs))
         if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
 
         m, ls = get_m(D, λ, Ω, χs, ε_contour), get_ls(Ws, λ, Ω, χs, ε_contour)
+        delete!(ls, "AB")
         M, Ls = integrate(m)                 , map_dict(integrate, ls)
 
         ρ = get_ρ(M, Ls)
