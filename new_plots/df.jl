@@ -31,5 +31,5 @@ end
 # df_flat    = @subset(df, :Space_Time .== "flat");
 
 # filter_unchanged_cols(df_rindler)
-delete_deleted_imgs("new_plots/quench")
+delete_deleted_imgs("new_plots/rindler_plots")
 # imgs = delete_deleted_cols("new_plots/quench")
