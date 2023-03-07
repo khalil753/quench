@@ -107,13 +107,13 @@ function concurrence(ρ)
   2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end
 
-function make_img(χ0Bs, Ωs, Cs, path, experiment_name)
+function make_img(χ0Bs, Ωs, Cs, path, experiment_name, save)
   f, ax, hm = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0)
   ax.xlabel = "χB₀"; ax.ylabel = "Ω"; ax.title = "Concurrence"
   Colorbar(f[:, end+1], hm)
   display(f)
   img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
-  save("$path/$(img_name).pdf", f)
+  if save save("$path/$(img_name).pdf", f) end
   return img_name
 end
 

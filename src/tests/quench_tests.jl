@@ -108,15 +108,15 @@ function get_M_vs_L_Minkowski()
     savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
 end
 
-function get_concurrence()
+function get_flat_concurrence()
     λ = 1.0
     σ = 1
-    d = 0.5*σ    
+    d = 5*σ    
     initial_τs, final_τs = [switching_function_center_A - d, switching_function_center_B - d], 
                            [switching_function_center_A + d, switching_function_center_B + d]
     ε_contour = 5e-3
 
-    χ(τ) = switching_funcs["cos4"]((τ-switching_function_center_A)/σ)
+    χ(τ) = switching_funcs["gauss"]((τ-switching_function_center_A)/σ)
 
     M_func(Ω, L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     P(Ω)         = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
@@ -130,8 +130,8 @@ function get_concurrence()
     Cs_th = zeros(length(Ωs), length(ΔLs))
     for (i, Ω) in tqdm(enumerate(Ωs))
         for (j, ΔL) in tqdm(enumerate(ΔLs))
-            XA, XB = initialize_trajs(space_time, 0.5, ΔL, 0.0)
-            Ws, D = initialize_distributions(_Ws["flat"], _Ds["flat"], XA, XB)
+            XA, XB = initialize_trajs("flat", 0.0, ΔL, 0.0)
+            Ws, D  = initialize_distributions(_Ws["flat"], _Ds["flat"], XA, XB)
 
             m, ls = get_m(D, λ, Ω, χ, ε_contour), get_ls(Ws, λ, Ω, χ, ε_contour)
             M, Ls = integrate(m)                , map_dict(integrate, ls)
@@ -148,9 +148,9 @@ function get_concurrence()
         end
     end
 
-    p = plot(contourf(ΔLs, Ωs, Cs, ylabel="Ω", xlabel="ΔL"), contourf(ΔLs, Ωs, Cs_th, ylabel="Ω", xlabel="ΔL"), size=(3200,1800), linewidth=0, xtickfontsize=18, ytickfontsize=18)
+    p = Plots.plot(Plots.contourf(ΔLs, Ωs, Cs, ylabel="Ω", xlabel="ΔL"), Plots.contourf(ΔLs, Ωs, Cs_th, ylabel="Ω", xlabel="ΔL"), size=(3200,1800), linewidth=0, xtickfontsize=18, ytickfontsize=18)
     display(p)
-    savefig(p, "..\\plots\\old_plots\\flat_concurrence_heatmap.png")
+    savefig(p, "plots\\flat_concurrence_heatmap.png")
     Cs, Cs_th
 end
 
@@ -223,10 +223,10 @@ function accelerated_detector_tests()
     end
 end
 
-get_P_Minkowski();
+# get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
 # get_M_vs_L_Minkowski();
-# Cs, Cs_th = get_concurrence();
+Cs, Cs_th = get_flat_concurrence();
 # plot_C_vs_L()
 # plot_inertial_l();
 # plot_inertial_m();
