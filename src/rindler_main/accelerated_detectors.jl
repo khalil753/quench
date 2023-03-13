@@ -43,7 +43,7 @@ for (i, Ω) in tqdm(enumerate(Ωs))
     push!(run_durations, run_duration)
 end
 
-path = "new_plots/rindler_plots"
+path = "plots/new_plots/rindler_plots"
 img_names = plot_C_vs_L(path, experiment_name, ΔLss, Ωs, Cs)
 store_in_df(path, "df.csv", params, img_names, run_durations)
 

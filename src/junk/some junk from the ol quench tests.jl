@@ -77,6 +77,17 @@ function get_M_Minkowski()
     return Ωs, Ms, M.(Ωs)
 end
 
+function get_Xs(Wττ′) 
+    try 
+      Wττ′.Rf.inner.f.X, Wττ′.Rf.inner.f.X′
+    catch e
+      if isa(e, ErrorException)
+        Wττ′.f.X, Wττ′.f.X′
+      end
+    end
+  end
+  
+
 # function get_crossed_derivative(f::Function)::Function
 #   _f(xs) = f(xs[1], xs[2])
 #   Rf, If = real∘_f, imag∘_f

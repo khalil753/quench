@@ -41,31 +41,48 @@ get_crossed_derivative(f, ε) = (x,y) -> 1/4ε^2*(f(x + ε, y + ε) -  f(x - ε,
 function initialize_trajs(space_time, χ0A, χ0B, b)
   if     space_time=="quench"  XA, XB = QuenchTrajectory(χ0A, b)   , QuenchTrajectory(χ0B, b)
   elseif space_time=="flat"    XA, XB = InertialTrajectory(χ0A, 0, 0), InertialTrajectory(χ0B, 0, 0) 
-  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,χ0A,0,0), AcceleratedTrajectory(χ0B,χ0B,0,0) end
+  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,χ0A,0,0), AcceleratedTrajectory(χ0B,χ0B,0,0) 
+  else   println("I don't know what trajectory to analize given the spacetime under study: space_time = $space_time") end
   return XA, XB
 end
 
-function initialize_Ws(W_func, XA, XB)
+function initialize_Ws(W_func, XA, XB, with_derivative_coupling, ε_numeric_derivative)
   Ws = Dict()
   Ws["AB"] = DistributionWithTrajectories(W_func, XB, XA)
   Ws["AA"] = DistributionWithTrajectories(W_func, XA, XA)
   Ws["BB"] = DistributionWithTrajectories(W_func, XB, XB)
+  if with_derivative_coupling 
+    _gcd(f) = get_crossed_derivative(f, ε_numeric_derivative)
+    Ws = map_dict(_gcd, Ws)
+  end
   return Ws
 end
 
-initialize_distributions(W_func::Function, D_func::Function, XA, XB) = (initialize_Ws(W_func, XA, XB), DwT(D_func, XA, XB))
-
-function add_crossed_derivatives(Ws, D, ε_numeric_derivative)
-  _gcd(f) = get_crossed_derivative(f, ε_numeric_derivative)
-  return map_dict(_gcd, Ws), _gcd(D)
+function initialize_D(W, XA, XB, with_derivative_coupling, ε_numeric_derivative)
+  WAB = DwT(W, XA, XB)
+  WBA = DwT(W, XB, XA)
+  if with_derivative_coupling 
+    _gcd(f) = get_crossed_derivative(f, ε_numeric_derivative)
+    WAB, WBA = map(_gcd, [WAB, WBA])
+  end
+  function D(τA, τB)
+    if     XA(τA)[1]  > XB(τB)[1] return WAB(τA, τB) 
+    elseif XA(τA)[1] <= XB(τB)[1] return WBA(τB, τA) end
+  end
+  return D
 end
 
-function initialize_distributions(space_time::String, χ0A::Fl, χ0B::Fl, b::Fl, with_derivative_coupling, ε_numeric_derivative)
-  XA, XB = initialize_trajs(space_time, χ0A, χ0B, b)
-  Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
-  if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
-  return Ws, D
+function initialize_distributions(W::Function, XA, XB, with_derivative_coupling, ε_numeric_derivative) 
+   return (initialize_Ws(W, XA, XB, with_derivative_coupling, ε_numeric_derivative), 
+           initialize_D( W, XA, XB, with_derivative_coupling, ε_numeric_derivative))
 end
+
+# function initialize_distributions(space_time::String, χ0A::Fl, χ0B::Fl, b::Fl, with_derivative_coupling, ε_numeric_derivative)
+#   XA, XB = initialize_trajs(space_time, χ0A, χ0B, b)
+#   Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
+#   if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
+#   return Ws, D
+# end
 
 function memoized_integrate(l_or_m, Ms_Lss, initial_τs, final_τs, maxevals, rtol)
   if l_or_m in keys(Ms_Lss) return Ms_Lss[l_or_m] end
@@ -86,12 +103,12 @@ function get_ρ(M, Ls)
                              0  get(Ls, "AB", NaN)                 Ls["AA"]        0; #10
                              M                  0                        0         0] #11
 
-  if imag(ρ[2,2]) >   1e-5 println("the imaginary part of PB is quite big so there could be a numerical problem: PB = $(ρ[2,2])") end  
-  if imag(ρ[3,3]) >   1e-5 println("the imaginary part of PA is quite big so there could be a numerical problem: PB = $(ρ[3,3])") end  
-  if real(ρ[2,2]) <= -1e-3 println("PB is quite negative so there could be a numerical problem: PB = $(ρ[2,2])") end
-  if real(ρ[3,3]) <= -1e-3 println("PA is quite negative so there could be a numerical problem: PA = $(ρ[3,3])") end
-  if real(ρ[2,2]) >   1    println("PB is too big so there could be a numerical problem: PB = $(ρ[2,2])") end
-  if real(ρ[3,3]) >   1    println("PA is too big so there could be a numerical problem: PA = $(ρ[3,3])") end
+  if imag(ρ[2,2]) >   1e-5 println("the imaginary part of PB is quite big so there could be a numerical problem: PB = $(ρ[2,2])\n") end  
+  if imag(ρ[3,3]) >   1e-5 println("the imaginary part of PA is quite big so there could be a numerical problem: PB = $(ρ[3,3])\n") end  
+  if real(ρ[2,2]) <= -1e-3 println("PB is quite negative so there could be a numerical problem: PB = $(ρ[2,2])\n") end
+  if real(ρ[3,3]) <= -1e-3 println("PA is quite negative so there could be a numerical problem: PA = $(ρ[3,3])\n") end
+  if real(ρ[2,2]) >   1    println("PB is too big so there could be a numerical problem: PB = $(ρ[2,2])\n") end
+  if real(ρ[3,3]) >   1    println("PA is too big so there could be a numerical problem: PA = $(ρ[3,3])\n") end
   return ρ
 end
 
@@ -107,13 +124,13 @@ function concurrence(ρ)
   2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end
 
-function make_img(χ0Bs, Ωs, Cs, path, experiment_name, save)
+function make_img(χ0Bs, Ωs, Cs, path, experiment_name, save_bool)
   f, ax, hm = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0)
   ax.xlabel = "χB₀"; ax.ylabel = "Ω"; ax.title = "Concurrence"
   Colorbar(f[:, end+1], hm)
   display(f)
   img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
-  if save save("$path/$(img_name).pdf", f) end
+  if save_bool save("$path/$(img_name).pdf", f) end
   return img_name
 end
 
