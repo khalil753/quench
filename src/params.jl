@@ -5,17 +5,17 @@ const save_plots = false
 const save_data  = false
 
 # WightmanFunction params
-const space_time = "quench"
+const space_time = "flat"
 
 if     space_time == "quench"  const with_derivative_coupling = true
 elseif space_time == "rindler" const with_derivative_coupling = true 
-elseif space_time == "flat"    const with_derivative_coupling = true end
+elseif space_time == "flat"    const with_derivative_coupling = false end
 
 # Switching function params
 const switching_func_name = "cos4"
 const σ = 1.0
 const switching_function_center_A = 0.7σ
-const switching_function_center_B = 3σ
+const switching_function_center_B = 1.5σ
 
 # Quench regulator
 const b = (1e-1)*σ
