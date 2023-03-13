@@ -4,7 +4,8 @@ include("tools/3_LM_getters.jl")
 include("tools/SwitchingFuncs.jl")
 include("tools/Memoized_Integrator.jl")
 
-println(experiment_name)
+println("\n", experiment_name, "\n")
+if !save_plots println("Warning, you're running the simulation without saving the plots\n") end
 
 integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
 

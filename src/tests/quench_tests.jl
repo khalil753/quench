@@ -129,8 +129,8 @@ function get_flat_concurrence()
 
     integrate = MemoizedIntegrator(initial_τs, final_τs, 500000, 1e-4)
 
-    ΔLs = LinRange(0.5σ, 2σ, 5)
-    Ωs  = LinRange(-3/σ, 3/σ, 5)
+    ΔLs = LinRange(0.5σ, 2σ, 10)
+    Ωs  = LinRange(-3/σ, 3/σ, 12)
     Cs = zeros(length(Ωs), length(ΔLs))
     Cs_th = zeros(length(Ωs), length(ΔLs))
     for (i, Ω) in tqdm(enumerate(Ωs))

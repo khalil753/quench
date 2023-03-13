@@ -5,7 +5,7 @@ include("ComplexifyFuncs.jl")
 
 function get_l(W, λ, Ω, χs)
   χD , χD′ = isa(χs, Vector) ? χs : (χs, χs)
-  l(τs) =  λ^2 * χD(τs[1])*χD′(τs[2]) * W(τs[2], τs[1]) * exp(im*Ω*(τs[1] - τs[2])) #* γD(τs[1])*γD′(τs[2])
+  l(τs) =  λ^2 * χD(τs[1])*χD′(τs[2]) * W(τs[2], τs[1]) * exp(im*Ω*(τs[1] - τs[2]))
 end
 
 function get_m(D, λ, Ω, χs)
@@ -19,11 +19,6 @@ function get_ls(Ws, λ, Ω, χs)
        "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB]),
        "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB]))
 end
-
-# function get_m_and_ls(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative, λ, Ω, χs, ε_contour)
-#   Ws, D  = initialize_distributions(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative)
-#   return get_m(D,λ, Ω, χs), get_ls(Ws, λ, Ω, χs)
-# end 
 
 # function get_pole_distance(l_or_m, dist_func)
 #   local W
