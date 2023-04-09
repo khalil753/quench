@@ -17,7 +17,10 @@ PBs, PAs = zeros(nΩ, nχ), zeros(nΩ)
 run_duration = begin
 @elapsed for (i, Ω) in tqdm(enumerate(Ωs))
     for (j, χ0B) in tqdm(enumerate(χ0Bs))
-        XA, XB = initialize_trajs(space_time, χ0A, χ0B, b)
+        initial_τs, final_τs = initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_ηs, space_time)
+        χs = initialize_switching_funcs(switching_func_name, σ, ηcA_or_τcA, ηcB_or_τcB, using_ηs)  
+
+        XA, XB = initialize_trajs(space_time, χ0A, χ0B, b, )
         W = deform(_Ws[space_time], ε_contour)
         Ws, D = initialize_distributions(W, XA, XB, with_derivative_coupling, ε_numeric_derivative)
 
