@@ -107,13 +107,15 @@ function initialize_distributions(W::Function, XA, XB, with_derivative_coupling,
            initialize_D( W, XA, XB, with_derivative_coupling, ε_numeric_derivative))
 end
 
+initialize_distributions(W, XA, XB) = initialize_distributions(W, XA, XB, false, 0.0) 
+
 function integrate_ls(ls, initial_τs, final_τs, integrate_func)
   τiA, τiB = initial_τs
   τfA, τfB = final_τs
   Ls = Dict()
   Ls["AA"] = integrate_func(ls["AA"], [τiA, τiA], [τfA, τfA])
   Ls["BB"] = integrate_func(ls["BB"], [τiB, τiB], [τfB, τfB])
-  if "AB" in keys(ls) Ls["AB"] = integrate_func(ls["AB"]) end
+  if "AB" in keys(ls) Ls["AB"] = integrate_func(ls["AB"], [τiA, τiB], [τfA, τfB]) end
   return Ls
 end
 
