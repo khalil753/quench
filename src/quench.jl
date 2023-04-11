@@ -7,9 +7,7 @@ include("tools/Memoized_Integrator.jl")
 println("\n", experiment_name, "\n")
 if !save_plots println("Warning, you're running the simulation without saving the plots\n") end
 
-integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
-
-χs = initialize_switching_funcs(switching_func_name, σ, switching_function_center_A, switching_function_center_B)  
+integrate = MemoizedIntegrator(maxevals, rtol)
 
 ρs = []
 Cs , Ns  = zeros(nΩ, nχ), zeros(nΩ, nχ)
@@ -17,7 +15,7 @@ PBs, PAs = zeros(nΩ, nχ), zeros(nΩ)
 run_duration = begin
 @elapsed for (i, Ω) in tqdm(enumerate(Ωs))
     for (j, χ0B) in tqdm(enumerate(χ0Bs))
-        initial_τs, final_τs = initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_ηs, space_time)
+        initial_τs, final_τs = initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_ηs, space_time, switching_func_name)
         χs = initialize_switching_funcs(switching_func_name, σ, ηcA_or_τcA, ηcB_or_τcB, using_ηs)  
 
         XA, XB = initialize_trajs(space_time, χ0A, χ0B, b, )
@@ -25,7 +23,7 @@ run_duration = begin
         Ws, D = initialize_distributions(W, XA, XB, with_derivative_coupling, ε_numeric_derivative)
 
         m, ls = get_m(D, λ, Ω, χs), get_ls(Ws, λ, Ω, χs); delete!(ls, "AB")
-        M, Ls = integrate(m), map_dict(integrate, ls)
+        M, Ls = integrate_m_and_ls(m, ls, initial_τs, final_τs, integrate) 
 
         ρ = get_ρ(M, Ls)
         push!(ρs, ρ)
