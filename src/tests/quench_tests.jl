@@ -141,14 +141,8 @@ function get_flat_concurrence()
             XA, XB = initialize_trajs(space_time, 0, ΔL, b)
             W = deform(_Ws[space_time], ε_contour)
             Ws, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
-<<<<<<< HEAD
-
-            m, ls = get_m(D, λ, Ω, χ), get_ls(Ws, λ, Ω, χ)
-            M, Ls = integrate(m)     , map_dict(integrate, ls)
-=======
             m, ls = get_m(D, λ, Ω, χs), get_ls(Ws, λ, Ω, χs)
             M, Ls = integrate_m_and_ls(m, ls, integrate, initial_τs, final_τs)
->>>>>>> 528d1fe (Got the quench test running with the)
 
             ρ_th = [         1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
                                     0                 P(Ω)    C_func(Ω, ΔL)               0;

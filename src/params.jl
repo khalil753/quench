@@ -5,7 +5,7 @@ const save_plots = false
 const save_data  = false
 
 # WightmanFunction params
-const space_time = "flat"
+const space_time = "quench"
 
 if     space_time == "quench"  const with_derivative_coupling = true
 elseif space_time == "rindler" const with_derivative_coupling = true 
@@ -14,8 +14,9 @@ elseif space_time == "flat"    const with_derivative_coupling = false end
 # Switching function params
 const switching_func_name = "cos4"
 const σ = 1.0
-const switching_function_center_A = 0.7σ
-const switching_function_center_B = 1.5σ
+const ηcA_or_τcA = 1.0σ
+const ηcB_or_τcB = 1.0σ
+const using_ηs = false
 
 # Quench regulator
 const b = (1e-1)*σ
@@ -37,13 +38,6 @@ const ε_numeric_derivative = 1e-3
 
 # Integrator params
 Δτ = switching_func_name == "cos4" ? 0.5σ : 5σ
-if space_time=="quench"  const initial_τs, final_τs = [max(σ*1e-2, switching_function_center_A - Δτ),
-                                                       max(σ*1e-2, switching_function_center_B - Δτ)], 
-                                                      [switching_function_center_A + Δτ, 
-                                                       switching_function_center_B + Δτ] 
-else                     const initial_τs, final_τs = [switching_function_center_A - Δτ, switching_function_center_B - Δτ],
-                                                      [switching_function_center_A + Δτ, switching_function_center_B + Δτ]
-end
 const rtol = 1e-2
 const maxevals = 500000
 
@@ -54,8 +48,8 @@ params = DataFrame("Space_Time"           => [space_time],
                    "Derivative_Coupling"  => [with_derivative_coupling],
                    "Switching_Func"       => [switching_func_name],
                    "σ"                    => [σ],
-                   "SF_Center_A"          => [switching_function_center_A],
-                   "SF_Center_B"          => [switching_function_center_B],
+                   "SF_Center_A"          => [ηcA_or_τcA],
+                   "SF_Center_B"          => [ηcB_or_τcB],
                    "b"                    => [b],
                    "nΩ"                   => [nΩ],
                    "nχ"                   => [nχ],
@@ -66,8 +60,8 @@ params = DataFrame("Space_Time"           => [space_time],
                    "χ0Bf"                 => [χ0Bf],
                    "λ"                    => [λ],
                    "Numeric_Derivative_ε" => [ε_numeric_derivative],
-                   "initial_τs"           => [initial_τs],
-                   "final_τs"             => [final_τs],
+                #    "initial_τs"           => [initial_τs],
+                #    "final_τs"             => [final_τs],
                    "rtol"                 => [rtol],
                    "maxevals"             => [maxevals],
                    "Contour_ε"            => [ε_contour])
