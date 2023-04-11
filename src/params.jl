@@ -22,8 +22,8 @@ const using_ηs = false
 const b = (1e-1)*σ
 
 # Detector frequencies and Initial positions
-nΩ = 10 # Number of frquencies/initial conditions to iterate over
-nχ = 12
+nΩ = 5 # Number of frquencies/initial conditions to iterate over
+nχ = 5
 const χ0A = 1σ 
 if χ0A == 0 println("χ0A is zero and that will create problems with rindler and quench"); throw(Exception) end
 if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = -1/σ, 30/σ, χ0A + 0.5σ, χ0A + 1.5σ
