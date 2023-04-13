@@ -3,44 +3,22 @@
 include("2_D&W.jl")
 include("ComplexifyFuncs.jl")
 
-get_Xs(W::DistributionWithTrajectories) = W.X, W.X′
-
-function get_Xs(Wττ′) 
-  try 
-    Wττ′.Rf.inner.f.X, Wττ′.Rf.inner.f.X′
-  catch e
-    if isa(e, ErrorException)
-      Wττ′.f.X, Wττ′.f.X′
-    end
-  end
-end
-
-function get_l(W, λ, Ω, χs, ε_contour)
+function get_l(W, λ, Ω, χs)
   χD , χD′ = isa(χs, Vector) ? χs : (χs, χs)
-  # γD′, γD  = get_γ.(get_Xs(W))
-  W = complexify(W, ε_contour)
-  l(τs) =  λ^2*χD(τs[1])*χD′(τs[2]) * W(τs[2], τs[1])*exp(im*Ω*(τs[1] - τs[2])) #* γD(τs[1])*γD′(τs[2])
+  l(τs) =  λ^2 * χD(τs[1])*χD′(τs[2]) * W(τs[2], τs[1]) * exp(im*Ω*(τs[1] - τs[2]))
 end
 
-function get_m(D, λ, Ω, χs, ε_contour)
+function get_m(D, λ, Ω, χs)
   χA, χB = isa(χs, Vector) ? χs : (χs, χs)
-  # γA, γB = get_γ.(get_Xs(D))
-  D = complexify(D, ε_contour)
-  m(τs) = -λ^2*χA(τs[1])*χB(τs[2]) * D(τs[1], τs[2])*exp(im*Ω*(τs[1] + τs[2])) #* γA(τs[1])*γB(τs[2])
+  m(τs) = -λ^2 * χA(τs[1])*χB(τs[2]) * D(τs[1], τs[2]) * exp(im*Ω*(τs[1] + τs[2])) #* γA(τs[1])*γB(τs[2])
 end 
 
-function get_ls(Ws, λ, Ω, χs, ε_contour) 
+function get_ls(Ws, λ, Ω, χs) 
   χA, χB = isa(χs, Vector) ? χs : (χs, χs)
-  Dict("AA" => get_l(Ws["AA"], λ, Ω, [χA, χA], ε_contour),
-       "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB], ε_contour),
-       "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB], ε_contour)
-       )
+  Dict("AA" => get_l(Ws["AA"], λ, Ω, [χA, χA]),
+       "BB" => get_l(Ws["BB"], λ, Ω, [χB, χB]),
+       "AB" => get_l(Ws["AB"], λ, Ω, [χA, χB]))
 end
-
-function get_m_and_ls(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative, λ, Ω, χs, ε_contour)
-  Ws, D  = initialize_distributions(space_time, χ0A, χ0B, b, with_derivative_coupling, ε_numeric_derivative)
-  return get_m(D,λ, Ω, χs, ε_contour), get_ls(Ws, λ, Ω, χs, ε_contour)
-end 
 
 # function get_pole_distance(l_or_m, dist_func)
 #   local W

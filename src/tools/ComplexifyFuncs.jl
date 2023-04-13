@@ -24,3 +24,12 @@
 # end
 
 complexify(f, ε) = (τ1,τ2) -> f(τ1 - im*ε, τ2 + im*ε)
+
+function deform(f, ε) 
+    iε = im*ε
+    function new_f(X, Y)
+        deformed_X = [X[1] - iε, X[2:end]...]
+        deformed_Y = [Y[1] + iε, Y[2:end]...]
+        f(deformed_X, deformed_Y)
+    end
+end

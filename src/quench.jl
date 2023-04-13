@@ -1,8 +1,11 @@
-using QuadGK, HCubature, ProgressBars, Dates, CSV, CairoMakie
+using QuadGK, HCubature, ProgressBars, Dates, CSV, CairoMakie, JLD
 include("params.jl")
 include("tools/3_LM_getters.jl")
 include("tools/SwitchingFuncs.jl")
 include("tools/Memoized_Integrator.jl")
+
+println("\n", experiment_name, "\n")
+if !save_plots println("Warning, you're running the simulation without saving the plots\n") end
 
 integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
 
@@ -15,12 +18,11 @@ run_duration = begin
 @elapsed for (i, Ω) in tqdm(enumerate(Ωs))
     for (j, χ0B) in tqdm(enumerate(χ0Bs))
         XA, XB = initialize_trajs(space_time, χ0A, χ0B, b)
-        Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
-        if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
+        W = deform(_Ws[space_time], ε_contour)
+        Ws, D = initialize_distributions(W, XA, XB, with_derivative_coupling, ε_numeric_derivative)
 
-        m, ls = get_m(D, λ, Ω, χs, ε_contour), get_ls(Ws, λ, Ω, χs, ε_contour) 
-        delete!(ls, "AB")
-        M, Ls = integrate(m)                 , map_dict(integrate, ls)
+        m, ls = get_m(D, λ, Ω, χs), get_ls(Ws, λ, Ω, χs); delete!(ls, "AB")
+        M, Ls = integrate(m), map_dict(integrate, ls)
 
         ρ = get_ρ(M, Ls)
         push!(ρs, ρ)
@@ -30,11 +32,10 @@ run_duration = begin
 end
 end
 
-path = "new_plots/quench/"
-img_name = make_img(χ0Bs, Ωs, Cs/λ^2, path, experiment_name)
-println(img_name)
-save("new_plots/quench/$(img_name).jld", "data", Cs)
-store_in_df(path, "df.csv", params, [img_name], [run_duration])
+path = "plots/new_plots/quench/"
+img_name = make_img(χ0Bs, Ωs, Cs/λ^2, path, experiment_name, save_plots)
+if save_data  save("plots/new_plots/quench/$(img_name).jld", "data", Cs) end
+if save_plots store_in_df(path, "df.csv", params, [img_name], [run_duration]) end
 
 
 

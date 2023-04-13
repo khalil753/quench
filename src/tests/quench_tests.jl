@@ -18,15 +18,18 @@ function get_P_Minkowski()
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000, rtol=rtol)[1]
 
-    X = InertialTrajectory(0.0, 0.0, 0.0)
-    W = DistributionWithTrajectories(_Ws["flat"], X, X)
+    XA, XB = initialize_trajs("flat", 0, 0, b)
+    W = deform(_Ws["flat"], ε_contour)
+    Ws, _ = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
+    W = Ws["AA"]
+    
     χ(τ) = switching_funcs["gauss"](τ/σ)
 
     Ωs = LinRange(0, 2.5, 30)
     P_Ms = []
     for (i, Ω) in enumerate(Ωs)
         println("\rDoing Ω number $i")
-        l = get_l(W, λ, Ω, χ, ε_contour)
+        l = get_l(W, λ, Ω, χ)
         P_M = integrate(l)
         push!(P_Ms, P_M)
     end
@@ -37,7 +40,7 @@ function get_P_Minkowski()
 
     p = Plots.plot(Ωs, [P.(Ωs), real.(P_Ms), imag.(P_Ms)], labels=["Theoretical" "Real part of numerical" "Imaginary part of numerical"])
     display(p)
-    savefig(p, raw"plots\P_vs_Ω_Minkowski.png")
+    savefig(p, raw"plots\\test_plots\\\P_vs_Ω_Minkowski.png")
 end
 
 function get_M_vs_Ω_Minkowski()
@@ -54,24 +57,25 @@ function get_M_vs_Ω_Minkowski()
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=rtol)[1]
 
-    XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
-    D = DistributionWithTrajectories(_Ds["flat"], XA, XB)
+    XA, XB = initialize_trajs("flat", 0, L, b)
+    W = deform(_Ws["flat"], ε_contour)
+    _, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
     χ(τ) = switching_funcs["gauss"](τ/σ)
 
     Ωs = LinRange(0, 2.5, 30)
     Ms = []
     for (i, Ω) in enumerate(Ωs)
         println("\rDoing Ω number $i: Ω = $Ω")
-        m = get_m(D, λ, Ω, χ, ε_contour)
+        m = get_m(D, λ, Ω, χ)
         M = integrate(m)
         push!(Ms, M)
     end
 
     M(Ω) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
 
-    p = plot(Ωs, [(abs ∘ M).(Ωs), abs.(Ms)], labels=["theoretical" "numerical"])
+    p = Plots.plot(Ωs, [(abs ∘ M).(Ωs), abs.(Ms)], labels=["theoretical" "numerical"])
     display(p)
-    savefig(p, raw"plots\M_vs_Ω_Minkowski.png")
+    savefig(p, raw"plots\\test_plots\\M_vs_Ω_Minkowski.png")
     return Ωs, Ms, M.(Ωs)
 end
 
@@ -92,12 +96,13 @@ function get_M_vs_L_Minkowski()
     Ls = LinRange(σ/10, 2.5σ, 20)
     Ms = []
     for (i, L) in enumerate(Ls)
-        XA, XB = InertialTrajectory(0.0, 0.0, 0.0), InertialTrajectory(L, 0.0, 0.0)
-        D = DistributionWithTrajectories(_Ds["flat"], XA, XB)
+        XA, XB = initialize_trajs("flat", 0, L, b)
+        W = deform(_Ws["flat"], ε_contour)
+        Ws, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
         χ(τ) = switching_funcs["gauss"](τ/σ)
 
         println("\rDoing L number $i: L = $L")
-        m = get_m(D, λ, Ω, χ, ε_contour)
+        m = get_m(D, λ, Ω, χ)
         M = integrate(m)
         push!(Ms, M)
     end
@@ -105,7 +110,7 @@ function get_M_vs_L_Minkowski()
     M(L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     p = Plots.plot(Vec(Ls), [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
     display(p)
-    savefig(p, "plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
+    savefig(p, "plots\\test_plotsM_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
 end
 
 function get_flat_concurrence()
@@ -124,17 +129,18 @@ function get_flat_concurrence()
 
     integrate = MemoizedIntegrator(initial_τs, final_τs, 500000, 1e-4)
 
-    ΔLs = LinRange(0.5σ, 2σ, 5)
-    Ωs  = LinRange(-3/σ, 3/σ, 5)
+    ΔLs = LinRange(0.5σ, 2σ, 10)
+    Ωs  = LinRange(-3/σ, 3/σ, 12)
     Cs = zeros(length(Ωs), length(ΔLs))
     Cs_th = zeros(length(Ωs), length(ΔLs))
     for (i, Ω) in tqdm(enumerate(Ωs))
         for (j, ΔL) in tqdm(enumerate(ΔLs))
-            XA, XB = initialize_trajs("flat", 0.0, ΔL, 0.0)
-            Ws, D  = initialize_distributions(_Ws["flat"], _Ds["flat"], XA, XB)
+            XA, XB = initialize_trajs("flat", 0, ΔL, b)
+            W = deform(_Ws["flat"], ε_contour)
+            Ws, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
 
-            m, ls = get_m(D, λ, Ω, χ, ε_contour), get_ls(Ws, λ, Ω, χ, ε_contour)
-            M, Ls = integrate(m)                , map_dict(integrate, ls)
+            m, ls = get_m(D, λ, Ω, χ), get_ls(Ws, λ, Ω, χ)
+            M, Ls = integrate(m)     , map_dict(integrate, ls)
 
             ρ_th = [         1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
                                     0                 P(Ω)    C_func(Ω, ΔL)               0;
@@ -150,7 +156,7 @@ function get_flat_concurrence()
 
     p = Plots.plot(Plots.contourf(ΔLs, Ωs, Cs, ylabel="Ω", xlabel="ΔL"), Plots.contourf(ΔLs, Ωs, Cs_th, ylabel="Ω", xlabel="ΔL"), size=(3200,1800), linewidth=0, xtickfontsize=18, ytickfontsize=18)
     display(p)
-    savefig(p, "plots\\flat_concurrence_heatmap.png")
+    savefig(p, "plots\\test_plots\\flat_concurrence_heatmap.png")
     Cs, Cs_th
 end
 
