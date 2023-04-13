@@ -21,12 +21,6 @@ function _W_flat(X, X′)
   -1/(4*π^2*(Δt^2 - sum(Δx.^2)))
 end
 
-function _W_flat_with_epsilon(X, X′)
-  Δt, Δx = X[1] - X′[1], X[2:end] - X′[2:end]
-  iε = im*1e-3
-  -1/(4*π^2*((Δt - iε)^2 - sum(Δx.^2)))
-end
-
 _W_rindler = _W_flat
 
 function _time_order(W::Function)
@@ -40,8 +34,8 @@ _Ds = map_dict(_time_order, _Ws)
 
 @def_structequal struct DistributionWithTrajectories <: Function
   _G::Function
-  X ::AbstractTrajectory
-  X′::AbstractTrajectory 
+  X ::Function
+  X′::Function
 end
 DwT = DistributionWithTrajectories
 

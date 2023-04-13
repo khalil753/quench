@@ -5,12 +5,12 @@ function memoized_integrate(l_or_m, Ms_Lss, initial_τs, final_τs, maxevals, rt
     Ms_Lss[l_or_m] = hcubature(l_or_m, initial_τs, final_τs, maxevals=maxevals, rtol=rtol)[1]
     # Ms_Lss[l_or_m] = quad_integrate(l_or_m, initial_τs, final_τs, rtol)
     return Ms_Lss[l_or_m]
-  end
+end
   
-  function quad_integrate(f, t0s, tfs, rtol)
-    f1(x) = quadgk(y -> f([x, y]), t0s[2], tfs[2], rtol=rtol)[1]
-    return quadgk(f1, t0s[1], tfs[1], rtol=rtol)[1]
-  end
+function quad_integrate(f, t0s, tfs, rtol)
+  f1(x) = quadgk(y -> f([x, y]), t0s[2], tfs[2], rtol=rtol)[1]
+  return quadgk(f1, t0s[1], tfs[1], rtol=rtol)[1]
+end
   
 struct MemoizedIntegrator{T} <: Function
     Ms_Lss    :: Dict
