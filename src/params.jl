@@ -1,7 +1,7 @@
 using DataFrames
 
-const experiment_name = "quench_near_pulse_activation_A_center=3σ"
-const save_plots = false
+const experiment_name = "negative_chiA"
+const save_plots = true
 const save_data  = false
 
 # WightmanFunction params
@@ -9,25 +9,25 @@ const space_time = "quench"
 
 if     space_time == "quench"  const with_derivative_coupling = true
 elseif space_time == "rindler" const with_derivative_coupling = true 
-elseif space_time == "flat"    const with_derivative_coupling = false end
+elseif space_time == "flat_2d" const with_derivative_coupling = false end
 
 # Switching function params
 const switching_func_name = "cos4"
 const σ = 1.0
-const ηcA_or_τcA = 1.0σ
-const ηcB_or_τcB = 1.0σ
-const using_ηs = false
+const ηcA_or_τcA = 0.6σ
+const ηcB_or_τcB = 0.6σ
+const using_ηs = true
 
 # Quench regulator
-const b = (1e-1)*σ
+const b = space_time=="quench" ? (5e-1)*σ : 0.0
 
 # Detector frequencies and Initial positions
-nΩ = 5 # Number of frquencies/initial conditions to iterate over
-nχ = 5
-const χ0A = 1σ 
+nΩ = 20 # Number of frquencies/initial conditions to iterate over
+nχ = 20
+const χ0A = -2σ 
 if χ0A == 0 println("χ0A is zero and that will create problems with rindler and quench"); throw(Exception) end
-if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = -1/σ, 30/σ, χ0A + 0.5σ, χ0A + 1.5σ
-elseif space_time == "flat"                 Ω0, Ωf, χ0B0, χ0Bf = -1/σ, 30/σ, χ0A + 0.5σ, χ0A + 1.5σ end
+if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = 10/σ, 20/σ, abs(χ0A) + 0σ, abs(χ0A) + 1.0σ
+elseif space_time == "flat_2d"              Ω0, Ωf, χ0B0, χ0Bf = 10/σ, 20/σ, abs(χ0A) + 1σ, abs(χ0A) + 1.5σ end
 Ωs, χ0Bs = LinRange(Ω0, Ωf, nΩ), LinRange(χ0B0, χ0Bf, nχ)
 
 # Coupling strength of detector
