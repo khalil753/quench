@@ -114,33 +114,35 @@ function get_M_vs_L_Minkowski()
 end
 
 function get_flat_concurrence()
+    space_time = "flat"
     λ = 1.0
     σ = 1
     d = 5*σ    
-    initial_τs, final_τs = [switching_function_center_A - d, switching_function_center_B - d], 
-                           [switching_function_center_A + d, switching_function_center_B + d]
+    switching_function_center = 0.0
+    ηcA_or_τcA, ηcB_or_τcB = switching_function_center, switching_function_center
+    switching_func_name = "gauss"
     ε_contour = 5e-3
-
-    χ(τ) = switching_funcs["gauss"]((τ-switching_function_center_A)/σ)
 
     M_func(Ω, L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     P(Ω)         = λ^2/4π*(exp(-σ^2*Ω^2) - √π*σ*Ω*erfc(σ*Ω))
     C_func(Ω, L) = λ^2/4√π*σ/L*exp(-L^2/4σ^2) * (imag(exp(im*L*Ω) * erf(im*L/2σ + σ*Ω)) - sin(Ω*L))
 
-    integrate = MemoizedIntegrator(initial_τs, final_τs, 500000, 1e-4)
+    integrate = MemoizedIntegrator(500000, 1e-4)
 
-    ΔLs = LinRange(0.5σ, 2σ, 10)
-    Ωs  = LinRange(-3/σ, 3/σ, 12)
+    ΔLs = LinRange(0.5σ, 2σ, 5)
+    Ωs  = LinRange(-3/σ, 3/σ, 5)
     Cs = zeros(length(Ωs), length(ΔLs))
     Cs_th = zeros(length(Ωs), length(ΔLs))
     for (i, Ω) in tqdm(enumerate(Ωs))
         for (j, ΔL) in tqdm(enumerate(ΔLs))
-            XA, XB = initialize_trajs("flat", 0, ΔL, b)
-            W = deform(_Ws["flat"], ε_contour)
+            initial_τs, final_τs = initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, 0, 0, 0, false, space_time, switching_func_name)
+            χs = initialize_switching_funcs(switching_func_name, σ, ηcA_or_τcA, ηcB_or_τcB, false)  
+            
+            XA, XB = initialize_trajs(space_time, 0, ΔL, b)
+            W = deform(_Ws[space_time], ε_contour)
             Ws, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
-
-            m, ls = get_m(D, λ, Ω, χ), get_ls(Ws, λ, Ω, χ)
-            M, Ls = integrate(m)     , map_dict(integrate, ls)
+            m, ls = get_m(D, λ, Ω, χs), get_ls(Ws, λ, Ω, χs)
+            M, Ls = integrate_m_and_ls(m, ls, initial_τs, final_τs, integrate)
 
             ρ_th = [         1 - 2P(Ω)                  0                0    M_func(Ω, ΔL);
                                     0                 P(Ω)    C_func(Ω, ΔL)               0;
@@ -205,8 +207,10 @@ function plot_inertial_m()
 end
 
 function accelerated_detector_tests()
-    integrate = MemoizedIntegrator(initial_τs, final_τs, maxevals, rtol)
-    χs = initialize_switching_funcs(switching_func_name, σ, switching_function_center_A, switching_function_center_B)  
+    integrate = MemoizedIntegrator(maxevals, rtol)
+    χs = initialize_switching_funcs(switching_func_name, σ, 0.0, 0.0, false)  
+    ε_contour = 1e-3
+    initial_τs, final_τs = initialize_integration_ranges(0.0, 0.0, 0, 0, 0, false, "flat", "gauss")
     
     ρs = []
     Cs  ,Ns   = zeros(nΩ, nχ), zeros(nΩ, nχ)
@@ -215,11 +219,11 @@ function accelerated_detector_tests()
         ΔLs = ΔLss[Ω]
         for (j, ΔL) in tqdm(enumerate(ΔLs))
             XA, XB = AcceleratedTrajectory(χ0, 0, 0, 0), AcceleratedTrajectory(χ0, ΔL, 0, 0)
-            Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
+            Ws, D  = initialize_distributions(deform(_Ws[space_time], ε_contour), XA, XB, false, 0.0)
             if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
     
-            m, ls = get_m(D, λ, Ω, χs, ε_contour), get_ls(Ws, λ, Ω, χs, ε_contour)
-            M, Ls = integrate(m)                 , map_dict(integrate, ls)
+            m, ls = get_m(D, λ, Ω, χs), get_ls(Ws, λ, Ω, χs)
+            M, Ls = integrate_m_and_ls(m, ls, initial_τs, final_τs, integrate)
     
             ρ = get_ρ(M, Ls)
             push!(ρs, ρ)
@@ -232,7 +236,7 @@ end
 # get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
 # get_M_vs_L_Minkowski();
-Cs, Cs_th = get_flat_concurrence();
+Ws = get_flat_concurrence();
 # plot_C_vs_L()
 # plot_inertial_l();
 # plot_inertial_m();
