@@ -25,3 +25,8 @@ end
   z0::Fl
 end
 (X::AcceleratedTrajectory)(τ) = [X.χ0*sinh(τ/abs(X.χ0)), X.χ0*cosh(τ/abs(X.χ0)) + X.x0 - X.χ0, X.y0, X.z0]
+
+@def_structequal struct AcceleratedTrajectory2D <: AbstractTrajectory
+  χ0::Fl
+end
+(X::AcceleratedTrajectory2D)(τ) = [τ/abs(X.χ0), X.χ0]
