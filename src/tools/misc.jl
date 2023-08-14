@@ -170,11 +170,7 @@ function make_img(χ0Bs, Ωs, Cs, path, experiment_name, save_bool)
   Colorbar(f[:, end+1], hm)
   display(f)
   img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
-<<<<<<< HEAD
   if save_bool save("$path/$(img_name).svg", f) end
-=======
-  if save_bool save("$path/$(img_name).pdf", f) end
->>>>>>> 42ee51a3dd6d56ad0323f7282165f99107e7c0c5
   return img_name
 end
 
