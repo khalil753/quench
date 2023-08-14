@@ -39,6 +39,6 @@ end
 # df_flat    = @subset(df, :Space_Time .== "flat");
 
 # filter_unchanged_cols(df_rindler)
-# delete_deleted_imgs("plots/new_plots/rindler_plots")
+delete_deleted_imgs("plots/new_plots/quench_2")
 # imgs = delete_deleted_rows("plots/new_plots/quench")
-sort_alfabetically("plots/new_plots/quench")
+# sort_alfabetically("plots/new_plots/quench")

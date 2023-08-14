@@ -1,2 +1,0 @@
-Image_Name,Run_Duration,Space_Time,Derivative_Coupling,Switching_Func,σ,SF_Center_A,SF_Center_B,b,nΩ,nχ,χ0A,Ω0,Ωf,χ0B0,χ0Bf,λ,Numeric_Derivative_ε,initial_τs,final_τs,rtol,maxevals,Contour_ε
-big_chi_rindler_2023-04-13T11_13_57.930,34,quench,true,cos4,1.0,0.65,0.65,0.001,10,12,1.0,-1.0,30.0,1.5,2.5,0.01,0.001,"[0.15000000000000002, 0.15000000000000002]","[1.15, 1.15]",0.0001,1000000,0.001

@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="600pt" height="450pt" viewBox="0 0 600 450">
+<defs>
+<clipPath id="clip_0">
+<path d="M50.25 29.25H514.5V401.25H50.25Z"/>
+</clipPath>
+<clipPath id="clip_1">
+<path d="M50.25 54H338V191H50.25Z"/>
+</clipPath>
+<clipPath id="clip_2">
+<path d="M50.25 75H252V187H50.25Z"/>
+</clipPath>
+<clipPath id="clip_3">
+<path d="M50.25 82H190V183H50.25Z"/>
+</clipPath>
+<clipPath id="clip_4">
+<path d="M50.25 89H143V179H50.25Z"/>
+</clipPath>
+<clipPath id="clip_5">
+<path d="M50.25 97H107V174H50.25Z"/>
+</clipPath>
+<clipPath id="clip_6">
+<path d="M50.25 104H78V170H50.25Z"/>
+</clipPath>
+<clipPath id="clip_7">
+<path d="M50.25 111H71V166H50.25Z"/>
+</clipPath>
+<clipPath id="clip_8">
+<path d="M50.25 125H64V162H50.25Z"/>
+</clipPath>
+<clipPath id="clip_9">
+<path d="M50.25 139H57V158H50.25Z"/>
+</clipPath>
+</defs>
+<g>
+<path d="M0 0H600V450H0Z" fill="#ffffff"/>
+<path d="M50.25 29.25H514.5V401.25H50.25Z" fill="#ffffff"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M50.25 401.25V29.25"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M143.102 401.25V29.25"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M235.949 401.25V29.25"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M328.801 401.25V29.25"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M421.648 401.25V29.25"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M514.5 401.25V29.25"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M50.25 383.535H514.5"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M50.25 294.965H514.5"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M50.25 206.395H514.5"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M50.25 117.82H514.5"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" stroke-opacity=".12" d="M50.25 29.25H514.5"/>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="435.59376" x="272.08985">&#x03c7;</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="435.59376" x="279.84187">B</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="DejaVuSans"><tspan y="435.59376" x="287.84587">&#x2080;</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999836 0 0 1.0000017 0 0)" font-size="12.000026" font-family="TeXGyreHerosMakieRegular"><tspan y="419.36259" x="41.910226 48.58224 51.91825">3.0</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999859 0 0 1.0000014 0 0)" font-size="12.000029" font-family="TeXGyreHerosMakieRegular"><tspan y="419.36268" x="134.76192">3</tspan></text>
+<text xml:space="preserve" transform="matrix(.9999976 0 0 1.0000024 0 0)" font-size="12.000017" font-family="TeXGyreHerosMakieRegular"><tspan y="419.36228" x="141.43393">.</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999859 0 0 1.0000014 0 0)" font-size="12.000029" font-family="TeXGyreHerosMakieRegular"><tspan y="419.36268" x="144.76975">1</tspan></text>
+<text xml:space="preserve" transform="matrix(.9999981 0 0 1.0000019 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="419.3625" x="227.6098 234.28182 237.61783 320.466 327.138">3.23.</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999907 0 0 1.000001 0 0)" font-size="12.000034" font-family="TeXGyreHerosMakieRegular"><tspan y="419.36289" x="330.46907">3</tspan></text>
+<text xml:space="preserve" transform="matrix(.9999981 0 0 1.0000019 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="419.3625" x="413.3094">3</tspan></text>
+<text xml:space="preserve" transform="matrix(.9999962 0 0 1.0000038 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="419.3617" x="419.98207">.</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12.000046" font-family="TeXGyreHerosMakieRegular"><tspan y="419.36329" x="423.3164">4</tspan></text>
+<text xml:space="preserve" transform="matrix(.9999981 0 0 1.0000019 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="419.3625" x="506.16114 512.8331">3.</tspan></text>
+<text xml:space="preserve" transform="matrix(.9999962 0 0 1.0000038 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="419.3617" x="516.1699">5</tspan></text>
+<text xml:space="preserve" transform="matrix(0 -.9999988 1.0000013 0 0 0)" font-size="11.999991" font-family="TeXGyreHerosMakieRegular"><tspan y="22.289034" x="-219.80886">&#x03a9;</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000004 0 0 .9999996 0 0)" font-size="12.000005" font-family="TeXGyreHerosMakieRegular"><tspan y="387.91035" x="35.328115">0</tspan><tspan y="299.34" x="35.328115">5</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999859 0 0 1.0000014 0 0)" font-size="12.000006" font-family="TeXGyreHerosMakieRegular"><tspan y="210.76532" x="28.65629">1</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999937 0 0 1.0000006 0 0)" font-size="12.000016" font-family="TeXGyreHerosMakieRegular"><tspan y="210.76552" x="35.32815">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="11.999989" font-family="TeXGyreHerosMakieRegular"><tspan y="122.19531" x="28.65625">1</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000008 0 0 .9999991 0 0)" font-size="11.999999" font-family="TeXGyreHerosMakieRegular"><tspan y="122.19543" x="35.3281">5</tspan></text>
+<text xml:space="preserve" transform="matrix(.999999 0 0 1.0000011 0 0)" font-size="12.000001" font-family="TeXGyreHerosMakieRegular"><tspan y="33.624967" x="28.65628">2</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999979 0 0 1.0000002 0 0)" font-size="12.000011" font-family="TeXGyreHerosMakieRegular"><tspan y="33.624994" x="35.328134">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000004 0 0 .9999996 0 0)" font-size="11.999995" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632824" x="245.36711 254.03112">Co</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000013 0 0 .9999986 0 0)" font-size="12.000007" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632847" x="261.36296">n</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000004 0 0 .9999996 0 0)" font-size="11.999995" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632824" x="268.69523">c</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999949 0 0 1.0000006 0 0)" font-size="11.999984" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.6328" x="275.36735">u</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000004 0 0 .9999996 0 0)" font-size="11.999995" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632824" x="282.69914">r</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000013 0 0 .9999986 0 0)" font-size="12.000007" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632847" x="287.36683">r</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000004 0 0 .9999996 0 0)" font-size="11.999995" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632824" x="292.03507">e</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999949 0 0 1.0000006 0 0)" font-size="11.999984" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.6328" x="298.7072">n</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000004 0 0 .9999996 0 0)" font-size="11.999995" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.632824" x="306.03898">c</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999949 0 0 1.0000006 0 0)" font-size="11.999984" font-family="TeXGyreHerosMakieBold" font-weight="bold"><tspan y="23.6328" x="312.71113">e</tspan></text>
+<g clip-path="url(#clip_0)">
+<path d="M514.5 29.25H50.25V54.965L87.313 70.582 92.453 71.07 134.66 74.637 176.863 78.813 219.066 84.02 261.273 90.914 303.477 100.664 337.176 111.918 303.477 122.457 261.273 130.934 219.066 136.52 176.863 140.445 134.66 143.352 123.254 153.25 92.453 183.414 50.25 190.449V401.25H514.5ZM514.5 29.25" fill="#440154"/>
+</g>
+<g clip-path="url(#clip_1)">
+<path d="M50.25 54.965V75.164L92.453 80.367 134.66 86.375 176.863 93.668 219.066 102.992 251.18 111.918 219.066 119.789 176.863 127.645 134.66 133.453 111.852 153.25 92.453 172.246 50.25 186.316V190.449L92.453 183.414 123.254 153.25 134.66 143.352 176.863 140.445 219.066 136.52 261.273 130.934 303.477 122.457 337.176 111.918 303.477 100.664 261.273 90.914 219.066 84.02 176.863 78.813 134.66 74.637 92.453 71.07 87.313 70.582ZM50.25 54.965" fill="#482878"/>
+</g>
+<g clip-path="url(#clip_2)">
+<path d="M219.066 102.992 176.863 93.668 134.66 86.375 92.453 80.367 50.25 75.164V82.508L92.453 89.668 134.66 98.117 176.863 108.523 189.578 111.918 176.863 114.84 134.66 123.551 100.449 153.25 92.453 161.078 50.25 182.184V186.316L92.453 172.246 111.852 153.25 134.66 133.453 176.863 127.645 219.066 119.789 251.18 111.918ZM219.066 102.992" fill="#3e4a89"/>
+</g>
+<g clip-path="url(#clip_3)">
+<path d="M176.863 108.523 134.66 98.117 92.453 89.668 50.25 82.508V89.855L92.453 98.965 134.66 109.855 142.477 111.918 134.66 113.652 92.453 145.945 90.453 153.25 50.25 178.051V182.184L92.453 161.078 100.449 153.25 134.66 123.551 176.863 114.84 189.578 111.918ZM176.863 108.523" fill="#31688e"/>
+</g>
+<g clip-path="url(#clip_4)">
+<path d="M134.66 109.855 92.453 98.965 50.25 89.855V97.203L92.453 108.266 106.07 111.918 92.453 121.516 83.75 153.25 50.25 173.918V178.051L90.453 153.25 92.453 145.945 134.66 113.652 142.477 111.918ZM134.66 109.855" fill="#26838e"/>
+</g>
+<g clip-path="url(#clip_5)">
+<path d="M92.453 108.266 50.25 97.203V104.551L76.535 111.918 77.051 153.25 50.25 169.785V173.918L83.75 153.25 92.453 121.516 106.07 111.918ZM92.453 108.266" fill="#1f9d89"/>
+</g>
+<g clip-path="url(#clip_6)">
+<path d="M50.313 111.918 70.352 153.25 50.25 165.648V169.785L77.051 153.25 76.535 111.918 50.25 104.551V111.898ZM50.313 111.918" fill="#35b779"/>
+</g>
+<g clip-path="url(#clip_7)">
+<path d="M50.313 111.918 50.25 111.898V125.672L63.652 153.25 50.25 161.516V165.648L70.352 153.25ZM50.313 111.918" fill="#6cce59"/>
+</g>
+<g clip-path="url(#clip_8)">
+<path d="M50.25 139.461 56.949 153.25 50.25 157.383V161.516L63.652 153.25 50.25 125.672ZM50.25 139.461" fill="#b4dd2c"/>
+</g>
+<g clip-path="url(#clip_9)">
+<path d="M50.25 153.25V157.383L56.949 153.25 50.25 139.461ZM50.25 153.25" fill="#fde725"/>
+</g>
+<path d="M532.5 364.051H544.5V401.25H532.5Z" fill="#440154"/>
+<path d="M532.5 326.852H544.5V364.051H532.5Z" fill="#482878"/>
+<path d="M532.5 289.652H544.5V326.851H532.5Z" fill="#3e4a89"/>
+<path d="M532.5 252.449H544.5V289.648H532.5Z" fill="#31688e"/>
+<path d="M532.5 215.25H544.5V252.449H532.5Z" fill="#26838e"/>
+<path d="M532.5 178.051H544.5V215.25H532.5Z" fill="#1f9d89"/>
+<path d="M532.5 140.852H544.5V178.05101H532.5Z" fill="#35b779"/>
+<path d="M532.5 103.652H544.5V140.851H532.5Z" fill="#6cce59"/>
+<path d="M532.5 66.449H544.5V103.647998H532.5Z" fill="#b4dd2c"/>
+<path d="M532.5 29.25H544.5V66.449008H532.5Z" fill="#fde725"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M532.5 29.25H544.5V401.25H532.5Z"/>
+<text xml:space="preserve" transform="matrix(1.0000019 0 0 .9999981 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="405.62577" x="551.99899">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="405.625" x="558.6719 562.0079 568.6799">.00</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000019 0 0 .9999981 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="405.62577" x="575.35049">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="405.625" x="582.02346">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000019 0 0 .9999981 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="263.60206" x="551.99899">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="263.60157" x="558.6719 562.0079 568.6799">.00</tspan></text>
+<text xml:space="preserve" transform="matrix(1.0000019 0 0 .9999981 0 0)" font-size="12.000023" font-family="TeXGyreHerosMakieRegular"><tspan y="263.60206" x="575.35049">0</tspan></text>
+<text xml:space="preserve" transform="matrix(1 0 0 1 0 0)" font-size="12" font-family="TeXGyreHerosMakieRegular"><tspan y="263.60157" x="582.02346">1</tspan></text>
+<text xml:space="preserve" transform="matrix(1.000001 0 0 .99999907 0 0)" font-size="12.000034" font-family="TeXGyreHerosMakieRegular"><tspan y="121.57824" x="551.99948">0</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999907 0 0 1.000001 0 0)" font-size="12.000011" font-family="TeXGyreHerosMakieRegular"><tspan y="121.57801" x="558.6724 562.0084 568.6804">.00</tspan></text>
+<text xml:space="preserve" transform="matrix(1.000001 0 0 .99999907 0 0)" font-size="12.000034" font-family="TeXGyreHerosMakieRegular"><tspan y="121.57824" x="575.351">0</tspan></text>
+<text xml:space="preserve" transform="matrix(.99999907 0 0 1.000001 0 0)" font-size="12.000011" font-family="TeXGyreHerosMakieRegular"><tspan y="121.57801" x="582.024">2</tspan></text>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M50.25 401.625V406.125"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M143.102 401.625V406.125"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M235.949 401.625V406.125"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M328.801 401.625V406.125"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M421.648 401.625V406.125"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M514.5 401.625V406.125"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 383.535H45.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 294.965H45.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 206.395H45.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 117.82H45.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 29.25H45.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M544.875 401.25H549.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M544.875 259.227H549.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M544.875 117.203H549.375"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 401.25H514.875"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M50.25 401.625V28.875"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M49.875 29.25H514.875"/>
+<path stroke-width=".75" stroke-linecap="butt" stroke-miterlimit="2" stroke-linejoin="miter" fill="none" stroke="#000000" d="M514.5 401.625V28.875"/>
+</g>
+</svg>
