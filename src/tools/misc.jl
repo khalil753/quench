@@ -38,10 +38,41 @@ end
 
 get_crossed_derivative(f, ε) = (x,y) -> 1/4ε^2*(f(x + ε, y + ε) -  f(x - ε, y + ε) - f(x + ε, y - ε) + f(x - ε, y - ε))
 
+function check_boundaries_above_quench(initial_τs)
+  if space_time != "quench" return end
+  if initial_τs[1] == σ*1e-2 println("Detector A's lower integration boundary is touching the quench boundary\n") end
+  if initial_τs[2] == σ*1e-2 println("Detector B's lower integration boundary is touching the quench boundary\n") end
+end
+
+function check_boundaries_under_lightcone(final_τs, χ0A, χ0B, b, sqrtA, sqrtB)
+  ηfA, ηfB = final_τs[1]/sqrtA, final_τs[2]/sqrtB
+  y0A, y0B = asinh(χ0A/b)     , asinh(χ0B/b)
+  if ηfA >= abs(y0A) println("Detector A's upper integration boundary is touching the light cone: ηfA = $ηfA >= $y0A = y0A \n") end
+  if ηfB >= abs(y0B) println("Detector B's upper integration boundary is touching the light cone: ηfB = $ηfB >= $y0B = y0B \n") end
+end
+
+function initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_ηs, space_time, switching_func_name)
+  sqrtA, sqrtB = sqrt(χ0A^2 + b^2), sqrt(χ0B^2 + b^2)
+  if using_ηs τcA, τcB = ηcA_or_τcA*sqrtA, ηcB_or_τcB*sqrtB
+  else        τcA, τcB = ηcA_or_τcA      , ηcB_or_τcB end
+  Δτ = switching_func_name == "cos4" ? 0.5σ : 5σ
+  if   space_time=="quench"
+    initial_τs, final_τs = [max(σ*1e-2, τcA - Δτ), max(σ*1e-2, τcB - Δτ)],
+                           [            τcA + Δτ ,             τcB + Δτ ]
+    check_boundaries_above_quench(initial_τs)                                                    
+  else initial_τs, final_τs = [τcA - Δτ, τcB - Δτ], [τcA + Δτ, τcB + Δτ] end  
+  
+  check_boundaries_under_lightcone(final_τs, χ0A, χ0B, b, sqrtA, sqrtB)
+  return initial_τs, final_τs
+end
+
+initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_ηs) = initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_ηs, space_time, switching_func_name)
+
 function initialize_trajs(space_time, χ0A, χ0B, b)
-  if     space_time=="quench"  XA, XB = QuenchTrajectory(χ0A, b)   , QuenchTrajectory(χ0B, b)
-  elseif space_time=="flat"    XA, XB = InertialTrajectory(χ0A, 0, 0), InertialTrajectory(χ0B, 0, 0) 
-  elseif space_time=="rindler" XA, XB = AcceleratedTrajectory(χ0A,χ0A,0,0), AcceleratedTrajectory(χ0B,χ0B,0,0) 
+  if     space_time=="quench"   XA, XB = QuenchTrajectory(χ0A, b)             , QuenchTrajectory(χ0B, b)
+  elseif space_time=="flat_2d"  XA, XB = InertialTrajectory(χ0A, 0, 0)        , InertialTrajectory(χ0B, 0, 0) 
+  elseif space_time=="rindler"  XA, XB = AcceleratedTrajectory2D(χ0A)         , AcceleratedTrajectory2D(χ0B) 
+  elseif space_time=="rindler2" XA, XB = AcceleratedTrajectory(χ0A, χ0A, 0, 0), AcceleratedTrajectory(χ0B, χ0B, 0, 0) 
   else   println("I don't know what trajectory to analize given the spacetime under study: space_time = $space_time") end
   return XA, XB
 end
@@ -77,12 +108,21 @@ function initialize_distributions(W::Function, XA, XB, with_derivative_coupling,
            initialize_D( W, XA, XB, with_derivative_coupling, ε_numeric_derivative))
 end
 
-# function initialize_distributions(space_time::String, χ0A::Fl, χ0B::Fl, b::Fl, with_derivative_coupling, ε_numeric_derivative)
-#   XA, XB = initialize_trajs(space_time, χ0A, χ0B, b)
-#   Ws, D  = initialize_distributions(_Ws[space_time], _Ds[space_time], XA, XB)
-#   if with_derivative_coupling Ws, D = add_crossed_derivatives(Ws, D, ε_numeric_derivative) end
-#   return Ws, D
-# end
+initialize_distributions(W, XA, XB) = initialize_distributions(W, XA, XB, false, 0.0) 
+
+function integrate_ls(ls, initial_τs, final_τs, integrate_func)
+  τiA, τiB = initial_τs
+  τfA, τfB = final_τs
+  Ls = Dict()
+  Ls["AA"] = integrate_func(ls["AA"], [τiA, τiA], [τfA, τfA])
+  Ls["BB"] = integrate_func(ls["BB"], [τiB, τiB], [τfB, τfB])
+  if "AB" in keys(ls) Ls["AB"] = integrate_func(ls["AB"], [τiA, τiB], [τfA, τfB]) end
+  return Ls
+end
+
+function integrate_m_and_ls(m, ls, initial_τs, final_τs, integrate_func) 
+  return integrate_func(m, initial_τs, final_τs), integrate_ls(ls, initial_τs, final_τs, integrate_func)
+end
 
 function memoized_integrate(l_or_m, Ms_Lss, initial_τs, final_τs, maxevals, rtol)
   if l_or_m in keys(Ms_Lss) return Ms_Lss[l_or_m] end
@@ -126,11 +166,11 @@ end
 
 function make_img(χ0Bs, Ωs, Cs, path, experiment_name, save_bool)
   f, ax, hm = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0)
-  ax.xlabel = "χB₀"; ax.ylabel = "Ω"; ax.title = "Concurrence"
+  ax.xlabel = "χB₀"; ax.ylabel = "Ω" #; ax.title = "Concurrence"
   Colorbar(f[:, end+1], hm)
   display(f)
   img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
-  if save_bool save("$path/$(img_name).pdf", f) end
+  if save_bool save("$path/$(img_name).svg", f) end
   return img_name
 end
 
