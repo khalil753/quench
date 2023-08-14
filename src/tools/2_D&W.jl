@@ -16,12 +16,17 @@ function _W_quench(X, X′)
   end
 end
 
-function _W_flat(X, X′)
+function _W_flat_2d(X, X′)
   Δt, Δx = X[1] - X′[1], X[2:end] - X′[2:end]
-  -1/(4*π^2*(Δt^2 - sum(Δx.^2)))
+  -1/(4*π)*log(Δt^2 - sum(Δx.^2))
 end
 
-_W_rindler = _W_flat
+_W_rindler2 = _W_flat_2d
+
+function _W_rindler(X, X′)
+  (η, χ), (η′, χ′) = X, X′
+  return -1/(4*π)*log(χ^2 + χ′^2 - 2χ*χ′*cosh(η - η′))
+end
 
 function _time_order(W::Function)
   """This function creates a new time_ordered_W which is time oredered (duh)"""
