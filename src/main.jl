@@ -1,4 +1,4 @@
-using QuadGK, HCubature, ProgressBars, Dates, CSV, CairoMakie, JLD
+using QuadGK, HCubature, ProgressBars, Dates, CSV, CairoMakie, JLD, Printf
 include("params.jl")
 include("tools/3_LM_getters.jl")
 include("tools/SwitchingFuncs.jl")
@@ -10,7 +10,7 @@ if !save_plots println("Warning, you're running the simulation without saving th
 integrate = MemoizedIntegrator(maxevals, rtol)
 
 ρs = []
-Cs , Ns  = zeros(nΩ, nχ), zeros(nΩ, nχ)
+Cs , Ns, MIs  = zeros(nΩ, nχ), zeros(nΩ, nχ), zeros(nΩ, nχ)
 PBs, PAs = zeros(nΩ, nχ), zeros(nΩ)
 run_duration = begin
 @elapsed for (i, Ω) in tqdm(enumerate(Ωs))
@@ -27,17 +27,20 @@ run_duration = begin
 
         ρ = get_ρ(M, Ls)
         push!(ρs, ρ)
-        Cs[i,j], Ns[i,j] = concurrence(ρ), negativity(ρ)
+        Cs[i,j], Ns[i,j], MIs[i,j] = concurrence(ρ), negativity(ρ), mutual_information(ρ)
         PAs[i], PBs[i,j] = real(ρ[2,2]), real(ρ[3,3])
     end
 end
 end
 
-plot_folder = "new_plots/pretty_quench"
+plot_folder = "new_plots/quench_plots"
 path = "plots/$plot_folder"
-img_name = make_img(χ0Bs, Ωs, Cs/λ^2, path, experiment_name, save_plots)
-if save_data  save("$plot_folder/$(img_name).jld", "data", Cs) end
-if save_plots store_in_df(path, "df.csv", params, [img_name], [run_duration]) end
+img_name1 = make_img(χ0Bs, Ωs, Cs/λ^2, path, "concurrence_"       *experiment_name, save_plots)
+img_name2 = make_img(χ0Bs, Ωs, MIs   , path, "mutual_information_"*experiment_name, save_plots)
+
+if save_data  save("plots/$plot_folder/$(img_name1).jld", "data", Cs ) end
+if save_data  save("plots/$plot_folder/$(img_name2).jld", "data", MIs) end
+if save_plots store_in_df(path, "df.csv", params, [img_name1, img_name2], [run_duration, run_duration]) end
 
 
 
