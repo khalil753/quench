@@ -1,8 +1,8 @@
 using DataFrames
 
-const experiment_name = "negative_chiA"
+const experiment_name = "at_quench"
 const save_plots = true
-const save_data  = false
+const save_data  = true
 
 # WightmanFunction params
 const space_time = "quench"
@@ -14,8 +14,6 @@ elseif space_time == "flat_2d" const with_derivative_coupling = false end
 # Switching function params
 const switching_func_name = "cos4"
 const σ = 1.0
-const ηcA_or_τcA = 0.6σ
-const ηcB_or_τcB = 0.6σ
 const using_ηs = true
 
 # Quench regulator
@@ -24,11 +22,16 @@ const b = space_time=="quench" ? (5e-1)*σ : 0.0
 # Detector frequencies and Initial positions
 nΩ = 20 # Number of frquencies/initial conditions to iterate over
 nχ = 20
-const χ0A = -2σ 
+const χ0A = 2σ 
+const y0A = asinh(χ0A/b)
 if χ0A == 0 println("χ0A is zero and that will create problems with rindler and quench"); throw(Exception) end
-if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = 10/σ, 20/σ, abs(χ0A) + 0σ, abs(χ0A) + 1.0σ
-elseif space_time == "flat_2d"              Ω0, Ωf, χ0B0, χ0Bf = 10/σ, 20/σ, abs(χ0A) + 1σ, abs(χ0A) + 1.5σ end
+if     space_time in ["quench", "rindler"]  Ω0, Ωf, χ0B0, χ0Bf = 10/σ, 20/σ, abs(χ0A) + 1.05σ, abs(χ0A) + 1.5σ
+elseif space_time == "flat_2d"              Ω0, Ωf, χ0B0, χ0Bf = 10/σ, 20/σ, abs(χ0A) + 1σ   , abs(χ0A) + 1.5σ end
 Ωs, χ0Bs = LinRange(Ω0, Ωf, nΩ), LinRange(χ0B0, χ0Bf, nχ)
+
+# Switching functions parameters continued
+const ηcA_or_τcA = 1.0y0A
+const ηcB_or_τcB = 1.0y0A
 
 # Coupling strength of detector
 const λ = 1e-2
