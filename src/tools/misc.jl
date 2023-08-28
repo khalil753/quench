@@ -164,13 +164,47 @@ function concurrence(ρ)
   2*max(0, abs(ρ[1,4]) - sqrt(ρ22*ρ33))
 end
 
+function entropy(Ps)
+  @assert all(1 .>= Ps .>= 0)
+  @assert sum(Ps) == 1
+  s = 0
+  for P in Ps 
+    if P > 0 s -= P*log(P) end
+  end
+  return s
+end
+
+function mutual_information(ρ)
+  PB, PA = real(ρ[2,2]), real(ρ[3,3])
+  SA = entropy([1-PA, PA])
+  SB = entropy([1-PB, PB])
+  SAB = entropy([1 - PB - PA, PB, PA])
+  return SA + SB - SAB
+end
+
+function format_axes(ax) 
+  ax.xlabel = L"\chi_{B0}"; ax.ylabel = L"\Omega" #; ax.title = "Concurrence"
+  ax.xticklabelsize = 20
+  ax.yticklabelsize = 20
+  ax.xlabelsize = 28
+  ax.ylabelsize = 28
+end
+
+function format_colorbar(f, hm, experiment_name)
+  cb_lbl = occursin("concurrence", experiment_name) ? L"C(\rho)/\lambda^2" : L"I(\rho)"
+  Colorbar(f[:, end+1], hm, label=cb_lbl,
+                            tickformat= values ->[@sprintf "%.1e" value for value in values],
+                            labelsize=28,
+                            ticklabelsize = 20)
+end
+
 function make_img(χ0Bs, Ωs, Cs, path, experiment_name, save_bool)
-  f, ax, hm = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0)
-  ax.xlabel = "χB₀"; ax.ylabel = "Ω" #; ax.title = "Concurrence"
-  Colorbar(f[:, end+1], hm)
+  f, ax, hm = CairoMakie.contourf(χ0Bs, Ωs, Cs', linewidth=-0.0, fontsize=50)
+  format_axes(ax)
+  format_colorbar(f, hm, experiment_name)
   display(f)
   img_name = replace("$(experiment_name)_$(now())", ":"=>"_")
-  if save_bool save("$path/$(img_name).svg", f) end
+  if save_bool save("$path/$(img_name).pdf", f) end
   return img_name
 end
 
