@@ -17,7 +17,7 @@ end
 function delete_deleted_rows(path)
     df = CSV.read("$path/df.csv", DataFrame)
     files = readdir("$path")
-    imgs = filter(img_name -> img_name[end-3:end]==".pdf", files)
+    imgs = filter(img_name -> img_name[end-3:end] in [".pdf",], files)
     for img in imgs
         if img[1:end-4] in df.Image_Name continue end
         rm("$path/$img"); rm("$path/$(img[1:end-4]).jld")
@@ -39,6 +39,6 @@ end
 # df_flat    = @subset(df, :Space_Time .== "flat");
 
 # filter_unchanged_cols(df_rindler)
-delete_deleted_imgs("plots/new_plots/quench_2")
-# imgs = delete_deleted_rows("plots/new_plots/quench")
+delete_deleted_imgs("plots/new_plots/quench_plots")
+imgs = delete_deleted_rows("plots/new_plots/quench_plots")
 # sort_alfabetically("plots/new_plots/quench")
