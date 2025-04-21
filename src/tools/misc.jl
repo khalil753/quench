@@ -1,5 +1,5 @@
 # Abbreviations
-using ForwardDiff, CairoMakie
+using ForwardDiff, CairoMakie, Printf
 
 Fl, Vec, C = Float64, Vector, ComplexF64
 VecCFl = Union{Vector{C}, Vector{Fl}}
@@ -62,7 +62,7 @@ function initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b
     check_boundaries_above_quench(initial_τs)                                                    
   else initial_τs, final_τs = [τcA - Δτ, τcB - Δτ], [τcA + Δτ, τcB + Δτ] end  
   
-  check_boundaries_under_lightcone(final_τs, χ0A, χ0B, b, sqrtA, sqrtB)
+  if occursin("below",experiment_name) check_boundaries_under_lightcone(final_τs, χ0A, χ0B, b, sqrtA, sqrtB) end
   return initial_τs, final_τs
 end
 
@@ -71,6 +71,8 @@ initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, χ0A, χ0B, b, using_�
 function initialize_trajs(space_time, χ0A, χ0B, b)
   if     space_time=="quench"   XA, XB = QuenchTrajectory(χ0A, b)             , QuenchTrajectory(χ0B, b)
   elseif space_time=="flat_2d"  XA, XB = InertialTrajectory(χ0A, 0, 0)        , InertialTrajectory(χ0B, 0, 0) 
+  elseif space_time=="flat"     XA, XB = InertialTrajectory(χ0A, 0, 0)        , InertialTrajectory(χ0B, 0, 0) 
+  elseif space_time=="flat_4d"  XA, XB = InertialTrajectory(χ0A, 0, 0)        , InertialTrajectory(χ0B, 0, 0) 
   elseif space_time=="rindler"  XA, XB = AcceleratedTrajectory2D(χ0A)         , AcceleratedTrajectory2D(χ0B) 
   elseif space_time=="rindler2" XA, XB = AcceleratedTrajectory(χ0A, χ0A, 0, 0), AcceleratedTrajectory(χ0B, χ0B, 0, 0) 
   else   println("I don't know what trajectory to analize given the spacetime under study: space_time = $space_time") end
@@ -174,12 +176,19 @@ function entropy(Ps)
   return s
 end
 
-function mutual_information(ρ)
+function mutual_information_old(ρ)
   PB, PA = real(ρ[2,2]), real(ρ[3,3])
   SA = entropy([1-PA, PA])
   SB = entropy([1-PB, PB])
   SAB = entropy([1 - PB - PA, PB, PA])
   return SA + SB - SAB
+end
+
+function mutual_information(ρ) 
+  LAA, LBB, LAB, LBA = real(ρ[3,3]), real(ρ[2,2]), ρ[3,2], ρ[2,3]
+  L_plus  = 1/2(LAA + LBB + sqrt((LAA-LBB)^2 + 4*abs(LAB)^2))
+  L_minus = 1/2(LAA + LBB - sqrt((LAA-LBB)^2 + 4*abs(LAB)^2))
+  return L_plus*log(L_plus) + L_minus*log(L_minus) - LAA*log(LAA) - LBB*log(LBB)
 end
 
 function format_axes(ax) 

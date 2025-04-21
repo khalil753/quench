@@ -6,7 +6,6 @@ function filter_unchanged_cols(df)
                   end
     return df[:,col_changed]
 end
-
 function delete_deleted_imgs(path)
     df = CSV.read("$path/df.csv", DataFrame)
     imgs = readdir("$path")
@@ -23,7 +22,6 @@ function delete_deleted_rows(path)
         rm("$path/$img"); rm("$path/$(img[1:end-4]).jld")
     end
 end
-
 function sort_alfabetically(path)
   df = CSV.read( "$path/df.csv", DataFrame)
   println(df)
@@ -32,13 +30,13 @@ function sort_alfabetically(path)
   CSV.write("$path/df.csv", df)    
 end
 
-# df = CSV.read("plots/df.csv", DataFrame)
+df = CSV.read("plots/new_plots/quench_old_plots/df.csv", DataFrame)
 # df = filter_unchanged_cols(df) 
 # df_quench  = @subset(df, :Space_Time .== "quench")
 # df_rindler = @subset(df, :Space_Time .== "rindler")
 # df_flat    = @subset(df, :Space_Time .== "flat");
 
 # filter_unchanged_cols(df_rindler)
-delete_deleted_imgs("plots/new_plots/quench_plots")
-imgs = delete_deleted_rows("plots/new_plots/quench_plots")
+# delete_deleted_imgs("plots/new_plots/quench_plots")
+# imgs = delete_deleted_rows("plots/new_plots/quench_plots")
 # sort_alfabetically("plots/new_plots/quench")

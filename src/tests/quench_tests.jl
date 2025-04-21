@@ -18,8 +18,8 @@ function get_P_Minkowski()
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f::Function) = hcubature(f, initial_τs, final_τs, maxevals=100000, rtol=rtol)[1]
 
-    XA, XB = initialize_trajs("flat", 0, 0, b)
-    W = deform(_Ws["flat"], ε_contour)
+    XA, XB = initialize_trajs("flat_2d", 0, 0, b)
+    W = deform(_Ws["flat_4d"], ε_contour)
     Ws, _ = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
     W = Ws["AA"]
     
@@ -57,8 +57,8 @@ function get_M_vs_Ω_Minkowski()
     initial_τs, final_τs =  [-d, -d], [d, d]
     integrate(f) = hcubature(f, initial_τs, final_τs, maxevals=100000 , rtol=rtol)[1]
 
-    XA, XB = initialize_trajs("flat", 0, L, b)
-    W = deform(_Ws["flat"], ε_contour)
+    XA, XB = initialize_trajs("flat_2d", 0, L, b)
+    W = deform(_Ws["flat_4d"], ε_contour)
     _, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
     χ(τ) = switching_funcs["gauss"](τ/σ)
 
@@ -97,7 +97,7 @@ function get_M_vs_L_Minkowski()
     Ms = []
     for (i, L) in enumerate(Ls)
         XA, XB = initialize_trajs("flat", 0, L, b)
-        W = deform(_Ws["flat"], ε_contour)
+        W = deform(_Ws["flat_4d"], ε_contour)
         Ws, D = initialize_distributions(W, XA, XB, false, ε_numeric_derivative)    
         χ(τ) = switching_funcs["gauss"](τ/σ)
 
@@ -110,11 +110,11 @@ function get_M_vs_L_Minkowski()
     M(L) = im*(λ^2)*σ/(4*√π*L)*exp(-(σ*Ω)^2 - L^2/(4*σ^2))*(erf(im*L/(2σ)) - 1)
     p = Plots.plot(Vec(Ls), [(abs ∘ M).(Ls), abs.(Ms)], labels=["theoretical" "numerical"], ylims=[-1e-6, max(abs.(Ms)...)*3/2])
     display(p)
-    savefig(p, "plots\\test_plotsM_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
+    savefig(p, "plots\\test_plots\\M_vs_L_Minkowski\\ε_contour_$(ε_contour)_σ=$σ.png")
 end
 
 function get_flat_concurrence()
-    space_time = "flat"
+    space_time = "flat_4d"
     λ = 1.0
     σ = 1
     d = 5*σ    
@@ -136,7 +136,7 @@ function get_flat_concurrence()
     for (i, Ω) in tqdm(enumerate(Ωs))
         for (j, ΔL) in tqdm(enumerate(ΔLs))
             initial_τs, final_τs = initialize_integration_ranges(ηcA_or_τcA, ηcB_or_τcB, 0, 0, 0, false, space_time, switching_func_name)
-            χs = initialize_switching_funcs(switching_func_name, σ, ηcA_or_τcA, ηcB_or_τcB, false)  
+            χs = initialize_switching_funcs(switching_func_name, σ, ηcA_or_τcA, ηcB_or_τcB, false, 0, ΔL)  
             
             XA, XB = initialize_trajs(space_time, 0, ΔL, b)
             W = deform(_Ws[space_time], ε_contour)
@@ -168,7 +168,7 @@ function plot_inertial_l()
     in flat spacetime with a gaussian switching function.
     """
     X = InertialTrajectory(0.0, 0.0, 0.0)
-    W = DistributionWithTrajectories(_Ws["flat"], X, X)
+    W = DistributionWithTrajectories(_Ws["flat_4d"], X, X)
 
     χ(τ) = switching_funcs["gauss"](τ/σ)
     df = deform_funcs["triangle"]
@@ -236,7 +236,7 @@ end
 # get_P_Minkowski();
 # Ωs, Ms_num, Ms_th = get_M_vs_Ω_Minkowski();
 # get_M_vs_L_Minkowski();
-Ws = get_flat_concurrence();
+# Ws = get_flat_concurrence();
 # plot_C_vs_L()
 # plot_inertial_l();
 # plot_inertial_m();

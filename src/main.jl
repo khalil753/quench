@@ -33,14 +33,21 @@ run_duration = begin
 end
 end
 
-plot_folder = "new_plots/quench_plots"
+plot_folder = "quench_plots"
 path = "plots/$plot_folder"
-img_name1 = make_img(χ0Bs, Ωs, Cs/λ^2, path, "concurrence_"       *experiment_name, save_plots)
-img_name2 = make_img(χ0Bs, Ωs, MIs   , path, "mutual_information_"*experiment_name, save_plots)
 
-if save_data  save("plots/$plot_folder/$(img_name1).jld", "data", Cs ) end
-if save_data  save("plots/$plot_folder/$(img_name2).jld", "data", MIs) end
-if save_plots store_in_df(path, "df.csv", params, [img_name1, img_name2], [run_duration, run_duration]) end
+if calculating_concurrence  
+    println("Making Concurrence Plot...")      
+    img_name1 = make_img(χ0Bs, Ωs, Cs/λ^2 + 0.0000000001*rand(size(Cs)...), path, "concurrence_"*experiment_name       , save_plots)
+    if save_data save("plots/$plot_folder/$(img_name1).jld", "data", Cs ) end
+    if save_plots store_in_df(path, "df.csv", params, [img_name1], [run_duration]) end
+end
+if calculating_mutual_information 
+    println("Making Mutual Information Plot...")      
+    img_name2 = make_img(χ0Bs, Ωs, MIs, path, "mutual_information_"*experiment_name, save_plots)
+    if save_data save("plots/$plot_folder/$(img_name2).jld", "data", MIs) end
+    if save_plots store_in_df(path, "df.csv", params, [img_name2], [run_duration]) end
+end
 
 
 

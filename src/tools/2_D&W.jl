@@ -21,6 +21,11 @@ function _W_flat_2d(X, X′)
   -1/(4*π)*log(Δt^2 - sum(Δx.^2))
 end
 
+function _W_flat_4d(X, X′)
+  Δt, Δx = X[1] - X′[1], X[2:end] - X′[2:end]
+  -1/(4*π^2)*1/(Δt^2 - sum(Δx.^2))
+end
+
 _W_rindler2 = _W_flat_2d
 
 function _W_rindler(X, X′)
